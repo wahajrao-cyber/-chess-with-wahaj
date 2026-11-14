@@ -13,14 +13,23 @@
   box-sizing: border-box;
 }
 
+:root {
+  --bg: #0b0e14;
+  --panel: #151a25;
+  --border: #292f40;
+  --purple: #9665ef;
+  --accent: #bd9bff;
+  --muted: #a5adbd;
+}
+
 body {
-  background: #0b0e14;
+  background: var(--bg);
   color: #f1f3f8;
   font-family: Arial, sans-serif;
 }
 
 header {
-  padding: 22px 7%;
+  padding: 20px 7%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -32,7 +41,7 @@ header {
 .logo {
   font-size: 23px;
   font-weight: bold;
-  color: #b38cff;
+  color: var(--accent);
 }
 
 nav a {
@@ -43,7 +52,7 @@ nav a {
 
 .hero {
   text-align: center;
-  padding: 75px 20px 45px;
+  padding: 65px 20px 40px;
 }
 
 .hero h1 {
@@ -56,7 +65,7 @@ nav a {
 }
 
 .hero p {
-  color: #a5adbd;
+  color: var(--muted);
   font-size: 17px;
   line-height: 1.7;
 }
@@ -65,7 +74,7 @@ nav a {
   display: inline-block;
   margin-top: 25px;
   padding: 14px 28px;
-  background: #9665ef;
+  background: var(--purple);
   color: white;
   border-radius: 8px;
   text-decoration: none;
@@ -73,7 +82,7 @@ nav a {
 }
 
 .section {
-  padding: 45px 7%;
+  padding: 40px 7%;
   text-align: center;
 }
 
@@ -82,27 +91,33 @@ nav a {
   margin-bottom: 25px;
 }
 
-/* CHESSBOARD AND HISTORY LAYOUT */
+/* GAME LAYOUT */
 
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(0, 480px) minmax(220px, 300px);
+  grid-template-columns: minmax(0,480px) minmax(220px,300px);
   justify-content: center;
   align-items: start;
   gap: 22px;
   max-width: 850px;
-  margin: 0 auto;
+  margin: auto;
+}
+
+.board-container {
+  width: 100%;
+  position: relative;
 }
 
 .board {
   width: 100%;
   aspect-ratio: 1;
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  grid-template-rows: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(8,minmax(0,1fr));
+  grid-template-rows: repeat(8,minmax(0,1fr));
   border: 5px solid #252a36;
-  border-radius: 7px;
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0 12px 35px #0007;
 }
 
 .square {
@@ -112,24 +127,17 @@ nav a {
   align-items: center;
   min-width: 0;
   min-height: 0;
-  border: 0;
-  padding: 0;
-  font-size: clamp(30px, 10vw, 52px);
+  font-size: clamp(27px,8vw,52px);
   cursor: pointer;
   user-select: none;
+  transition: background .15s;
 }
 
-.light {
-  background: #e6d8c0;
-}
-
-.dark {
-  background: #795b88;
-}
+.light { background: #e6d8c0; }
+.dark { background: #795b88; }
 
 .square.selected {
-  outline: 4px solid #a8e66c;
-  outline-offset: -4px;
+  background: #a8e66c !important;
 }
 
 .square.legal::after {
@@ -150,19 +158,102 @@ nav a {
 
 .square.white-piece {
   color: white;
-  text-shadow: 0 0 2px #111, 1px 1px 2px #111;
+  text-shadow: 0 0 2px #111,1px 1px 2px #111;
 }
 
 .square.black-piece {
   color: #151515;
-  text-shadow: 0 0 2px white, 1px 1px 2px white;
+  text-shadow: 0 0 2px white,1px 1px 2px white;
 }
 
-/* MOVE HISTORY PANEL */
+/* CHECK ANIMATION */
+
+.square.in-check {
+  background: #e34d55 !important;
+  animation: kingCheck .65s infinite alternate;
+}
+
+@keyframes kingCheck {
+  from {
+    box-shadow: inset 0 0 5px #ff0000;
+  }
+  to {
+    box-shadow: inset 0 0 28px #ff0000;
+  }
+}
+
+/* CHECKMATE OVERLAY */
+
+.game-overlay {
+  position: absolute;
+  inset: 0;
+  background: #080a10dd;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+}
+
+.game-overlay.show {
+  display: flex;
+  animation: fadeIn .4s ease;
+}
+
+.result-card {
+  background: #1c2230;
+  border: 1px solid #7652b9;
+  padding: 30px 20px;
+  width: 85%;
+  border-radius: 16px;
+  text-align: center;
+  animation: resultPop .45s ease;
+}
+
+.result-card h2 {
+  color: var(--accent);
+  font-size: 29px;
+  margin-bottom: 12px;
+}
+
+.result-card p {
+  color: var(--muted);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.result-card button {
+  padding: 12px 22px;
+  background: var(--purple);
+  border: 0;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes resultPop {
+  from {
+    transform: scale(.75);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* MOVE HISTORY */
 
 .history-panel {
-  background: #151a25;
-  border: 1px solid #292f40;
+  background: var(--panel);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 18px;
   text-align: left;
@@ -172,7 +263,7 @@ nav a {
 }
 
 .history-panel h3 {
-  color: #bd9bff;
+  color: var(--accent);
   font-size: 19px;
   margin-bottom: 15px;
   text-align: center;
@@ -185,7 +276,7 @@ nav a {
 }
 
 .history-table th {
-  color: #a5adbd;
+  color: var(--muted);
   padding: 10px 5px;
   border-bottom: 1px solid #353b4b;
   text-align: center;
@@ -194,25 +285,16 @@ nav a {
 .history-table td {
   padding: 10px 5px;
   text-align: center;
-  border-bottom: 1px solid #292f40;
+  border-bottom: 1px solid var(--border);
 }
 
 .history-table tr:nth-child(even) {
   background: #1c2230;
 }
 
-.history-table .move-number {
-  color: #9099aa;
-  width: 20%;
-}
-
-.history-table .white-move {
-  color: white;
-}
-
-.history-table .black-move {
-  color: #bd9bff;
-}
+.move-number { color: #9099aa; }
+.white-move { color: white; }
+.black-move { color: var(--accent); }
 
 .empty-history {
   text-align: center;
@@ -221,70 +303,116 @@ nav a {
   font-size: 14px;
 }
 
+/* PLAYER INFORMATION */
+
+.game-info {
+  max-width: 850px;
+  margin: 0 auto 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  padding: 13px 16px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.player-label {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.player-label.active {
+  color: #c5a5ff;
+  font-weight: bold;
+}
+
+#status {
+  margin: 20px auto;
+  color: var(--accent);
+  font-size: 17px;
+  min-height: 28px;
+}
+
 /* CONTROLS */
 
 .controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   margin: 20px auto;
   flex-wrap: wrap;
-  max-width: 700px;
+  max-width: 750px;
 }
 
 .controls button,
 .controls select {
-  padding: 12px 15px;
-  border: 1px solid #555;
+  padding: 12px 14px;
+  border: 1px solid #41495b;
   border-radius: 8px;
   background: #252a36;
   color: white;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .controls button {
-  background: #9665ef;
   border: 0;
   font-weight: bold;
   cursor: pointer;
+  transition: .2s;
 }
 
-.controls button:disabled {
-  opacity: .5;
+.controls button:hover {
+  filter: brightness(1.2);
+  transform: translateY(-2px);
+}
+
+#undo, #restart {
+  background: var(--purple);
+}
+
+#resign {
+  background: #bd414b;
+}
+
+#draw {
+  background: #287d65;
+}
+
+#soundToggle {
+  background: #384257;
 }
 
 #status {
-  margin-top: 18px;
-  color: #bd9bff;
-  font-size: 18px;
-  min-height: 28px;
+  font-weight: bold;
 }
 
 /* FEATURES */
 
 .features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
   gap: 18px;
   max-width: 1000px;
   margin: auto;
 }
 
 .feature {
-  background: #151a25;
-  border: 1px solid #292f40;
+  background: var(--panel);
+  border: 1px solid var(--border);
   padding: 28px 18px;
   border-radius: 12px;
 }
 
 .feature h3 {
-  color: #bd9bff;
+  color: var(--accent);
   margin-bottom: 12px;
 }
 
 .feature p {
-  color: #a5adbd;
+  color: var(--muted);
   line-height: 1.6;
 }
 
@@ -296,7 +424,7 @@ footer {
   margin-top: 45px;
 }
 
-/* MOBILE LAYOUT */
+/* MOBILE */
 
 @media(max-width:700px) {
 
@@ -316,13 +444,17 @@ footer {
     gap: 18px;
   }
 
-  .board {
-    width: min(92vw, 480px);
+  .board-container {
+    width: min(92vw,480px);
   }
 
   .history-panel {
-    width: min(92vw, 480px);
+    width: min(92vw,480px);
     max-height: 240px;
+  }
+
+  .game-info {
+    width: min(92vw,480px);
   }
 
   .controls {
@@ -332,7 +464,7 @@ footer {
   .controls button,
   .controls select {
     padding: 11px 10px;
-    font-size: 13px;
+    font-size: 12px;
   }
 }
 </style>
@@ -360,84 +492,101 @@ footer {
 
 <section class="section" id="board">
 
-  <h2>♟ Chess Arena</h2>
+<h2>♟ Chess Arena</h2>
 
-  <p style="color:#a5adbd;margin-bottom:20px">
-    Challenge the computer and sharpen your skills.
-  </p>
+<p style="color:#a5adbd;margin-bottom:20px">
+Challenge the computer and sharpen your skills.
+</p>
 
-  <div class="game-layout">
+<div class="game-info">
+  <span class="player-label" id="whiteLabel">♔ White</span>
+  <span class="player-label" id="blackLabel">♚ Black</span>
+</div>
+
+<div class="game-layout">
+
+  <div class="board-container">
 
     <div class="board" id="boardGrid"></div>
 
-    <div class="history-panel">
-
-      <h3>📜 Move History</h3>
-
-      <div id="moveHistory">
-        <div class="empty-history">
-          No moves yet. Start playing!
-        </div>
+    <div class="game-overlay" id="gameOverlay">
+      <div class="result-card">
+        <h2 id="resultTitle">CHECKMATE!</h2>
+        <p id="resultMessage"></p>
+        <button onclick="restartGame()">Play Again</button>
       </div>
-
     </div>
 
   </div>
 
-  <div class="controls">
-
-    <select id="playerColor">
-      <option value="w">Play as White ♔</option>
-      <option value="b">Play as Black ♚</option>
-    </select>
-
-    <select id="difficulty">
-      <option value="easy">Easy Computer</option>
-      <option value="medium" selected>Medium Computer</option>
-      <option value="hard">Hard Computer</option>
-    </select>
-
-    <button id="undo">↶ Undo</button>
-    <button id="restart">↻ New Game</button>
-
+  <div class="history-panel">
+    <h3>📜 Move History</h3>
+    <div id="moveHistory">
+      <div class="empty-history">
+        No moves yet. Start playing!
+      </div>
+    </div>
   </div>
 
-  <p id="status">Loading chess engine...</p>
+</div>
+
+<div class="controls">
+
+  <select id="playerColor">
+    <option value="w">Play as White ♔</option>
+    <option value="b">Play as Black ♚</option>
+  </select>
+
+  <select id="difficulty">
+    <option value="easy">Easy Computer</option>
+    <option value="medium" selected>Medium Computer</option>
+    <option value="hard">Hard Computer</option>
+  </select>
+
+  <button id="undo">↶ Undo</button>
+  <button id="restart">↻ New Game</button>
+  <button id="draw">½ Draw</button>
+  <button id="resign">⚑ Resign</button>
+  <button id="soundToggle">🔊 Sound ON</button>
+
+</div>
+
+<p id="status">Loading Stockfish...</p>
 
 </section>
 
 <section class="section" id="features">
 
-  <h2>Explore The Platform</h2>
+<h2>Explore The Platform</h2>
 
-  <div class="features">
+<div class="features">
 
-    <div class="feature">
-      <h3>♟ Play Chess</h3>
-      <p>Experience the world of chess.</p>
-    </div>
-
-    <div class="feature">
-      <h3>🤖 Play Computer</h3>
-      <p>Challenge your thinking and improve.</p>
-    </div>
-
-    <div class="feature">
-      <h3>🏆 Leaderboards</h3>
-      <p>Track rankings and celebrate achievements.</p>
-    </div>
-
-    <div class="feature">
-      <h3>📚 Learn Chess</h3>
-      <p>Explore strategies, tactics and openings.</p>
-    </div>
-
+  <div class="feature">
+    <h3>♟ Play Chess</h3>
+    <p>Experience the world of chess.</p>
   </div>
+
+  <div class="feature">
+    <h3>🤖 Play Computer</h3>
+    <p>Challenge your thinking and improve.</p>
+  </div>
+
+  <div class="feature">
+    <h3>🏆 Leaderboards</h3>
+    <p>Track rankings and achievements.</p>
+  </div>
+
+  <div class="feature">
+    <h3>📚 Learn Chess</h3>
+    <p>Explore strategies, tactics and openings.</p>
+  </div>
+
+</div>
 
 </section>
 
 <footer>
-  © 2026 Chess With Wahaj | All Rights Reserved
+© 2026 Chess With Wahaj | All Rights Reserved
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
@@ -446,7 +595,7 @@ footer {
 
 // ==========================================
 // CHESS WITH WAHAJ
-// STOCKFISH 19 + MOVE HISTORY
+// STOCKFISH 19 + PROFESSIONAL INTERFACE
 // ==========================================
 
 const game = new Chess();
@@ -458,8 +607,8 @@ const historyContainer = document.getElementById("moveHistory");
 const colorSelect = document.getElementById("playerColor");
 const difficultySelect = document.getElementById("difficulty");
 
-const undoButton = document.getElementById("undo");
-const restartButton = document.getElementById("restart");
+const whiteLabel = document.getElementById("whiteLabel");
+const blackLabel = document.getElementById("blackLabel");
 
 let selected = null;
 
@@ -477,6 +626,10 @@ let pendingSearch = false;
 let discardCurrentMove = false;
 let thinkingTimer = null;
 
+let gameResult = null;
+let soundEnabled = true;
+let audioContext = null;
+
 const symbols = {
   wp:"♙", wn:"♘", wb:"♗", wr:"♖",
   wq:"♕", wk:"♔",
@@ -484,28 +637,179 @@ const symbols = {
   br:"♜", bq:"♛", bk:"♚"
 };
 
-// ==========================================
-// COMPUTER DIFFICULTY
-// ==========================================
-
 const difficultySettings = {
+  easy: {skill:0,time:400},
+  medium: {skill:8,time:900},
+  hard: {skill:20,time:1800}
+};
 
-  easy: {
-    skill: 0,
-    time: 400
-  },
+// ==========================================
+// SOUND EFFECTS
+// ==========================================
 
-  medium: {
-    skill: 8,
-    time: 900
-  },
+function playSound(type) {
 
-  hard: {
-    skill: 20,
-    time: 1800
+  if (!soundEnabled) return;
+
+  try {
+
+    const AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass) return;
+
+    if (!audioContext) {
+      audioContext = new AudioContextClass();
+    }
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+
+    const sounds = {
+      move: [520,0.09],
+      capture: [260,0.15],
+      check: [740,0.22],
+      mate: [880,0.4],
+      end: [330,0.25],
+      start: [600,0.12]
+    };
+
+    const settings = sounds[type] || sounds.move;
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = type === "mate" ? "triangle" : "sine";
+
+    oscillator.frequency.setValueAtTime(
+      settings[0],
+      audioContext.currentTime
+    );
+
+    if (type === "mate") {
+      oscillator.frequency.exponentialRampToValueAtTime(
+        440,
+        audioContext.currentTime + settings[1]
+      );
+    }
+
+    gain.gain.setValueAtTime(
+      0.16,
+      audioContext.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      audioContext.currentTime + settings[1]
+    );
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start();
+    oscillator.stop(
+      audioContext.currentTime + settings[1]
+    );
+
+  } catch(error) {
+    console.log("Audio unavailable");
+  }
+}
+
+document.getElementById("soundToggle").addEventListener(
+  "click",
+  function() {
+
+    soundEnabled = !soundEnabled;
+
+    this.textContent = soundEnabled
+      ? "🔊 Sound ON"
+      : "🔇 Sound OFF";
+
+    if (soundEnabled) playSound("move");
+
+  }
+);
+
+// ==========================================
+// GAME ENDING
+// ==========================================
+
+function finishGame(title, message, result) {
+
+  gameResult = result;
+
+  stopEngineSearch();
+
+  selected = null;
+
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("resultMessage").textContent = message;
+
+  document.getElementById("gameOverlay").classList.add("show");
+
+  playSound("end");
+
+  renderBoard();
+
+}
+
+function hideResult() {
+  document.getElementById("gameOverlay").classList.remove("show");
+}
+
+// ==========================================
+// CHECKMATE AND CHECK DETECTION
+// ==========================================
+
+function checkGameResult() {
+
+  if (game.in_checkmate()) {
+
+    const winner =
+      game.turn() === "w" ? "Black" : "White";
+
+    const playerWon = winner ===
+      (playerColor === "w" ? "White" : "Black");
+
+    finishGame(
+      "♛ CHECKMATE!",
+      playerWon
+        ? "Congratulations! You defeated the computer."
+        : "The computer wins this game. Try again!",
+      playerWon ? "win" : "loss"
+    );
+
+    playSound("mate");
+
+    return true;
   }
 
-};
+  if (game.in_stalemate()) {
+    finishGame(
+      "DRAW!",
+      "The game ended in stalemate.",
+      "draw"
+    );
+    return true;
+  }
+
+  if (game.in_draw()) {
+    finishGame(
+      "DRAW!",
+      "The game ended in a draw.",
+      "draw"
+    );
+    return true;
+  }
+
+  if (game.in_check()) {
+    playSound("check");
+  }
+
+  return false;
+}
 
 // ==========================================
 // MOVE HISTORY
@@ -519,17 +823,13 @@ function renderMoveHistory() {
 
   if (moves.length === 0) {
 
-    historyContainer.innerHTML = `
-      <div class="empty-history">
-        No moves yet. Start playing!
-      </div>
-    `;
+    historyContainer.innerHTML =
+      '<div class="empty-history">No moves yet. Start playing!</div>';
 
     return;
   }
 
   const table = document.createElement("table");
-
   table.className = "history-table";
 
   table.innerHTML = `
@@ -561,25 +861,19 @@ function renderMoveHistory() {
     black.className = "black-move";
     black.textContent = moves[i + 1] || "";
 
-    row.appendChild(number);
-    row.appendChild(white);
-    row.appendChild(black);
-
+    row.append(number, white, black);
     tbody.appendChild(row);
 
   }
 
   historyContainer.appendChild(table);
 
-  // Keep the latest move visible.
-
-  historyContainer.scrollTop =
-    historyContainer.scrollHeight;
+  historyContainer.scrollTop = historyContainer.scrollHeight;
 
 }
 
 // ==========================================
-// STOCKFISH ENGINE INITIALIZATION
+// STOCKFISH INITIALIZATION
 // ==========================================
 
 function initializeEngine() {
@@ -587,7 +881,7 @@ function initializeEngine() {
   if (engine || engineLoading || engineError) return;
 
   engineLoading = true;
-  status.textContent = "Loading Stockfish 19...";
+  updateStatus();
 
   try {
 
@@ -600,10 +894,8 @@ function initializeEngine() {
       const message = String(event.data).trim();
 
       if (message === "uciok") {
-
         engine.postMessage("isready");
         return;
-
       }
 
       if (message === "readyok") {
@@ -618,7 +910,6 @@ function initializeEngine() {
         }
 
         return;
-
       }
 
       if (message.startsWith("bestmove")) {
@@ -636,7 +927,6 @@ function initializeEngine() {
           }
 
           return;
-
         }
 
         const match = message.match(
@@ -649,6 +939,7 @@ function initializeEngine() {
         }
 
         if (
+          gameResult ||
           game.game_over() ||
           game.turn() !== computerColor
         ) {
@@ -659,8 +950,8 @@ function initializeEngine() {
         const uciMove = match[1];
 
         const moveData = {
-          from: uciMove.substring(0, 2),
-          to: uciMove.substring(2, 4)
+          from: uciMove.substring(0,2),
+          to: uciMove.substring(2,4)
         };
 
         if (uciMove.length === 5) {
@@ -672,10 +963,17 @@ function initializeEngine() {
         selected = null;
 
         if (played) {
+
+          playSound(played.captured ? "capture" : "move");
+
           renderBoard();
+
+          checkGameResult();
+
         } else {
-          status.textContent =
-            "Computer move failed. Please start a new game.";
+
+          status.textContent = "Computer move failed.";
+
         }
 
       }
@@ -689,80 +987,75 @@ function initializeEngine() {
       engineReady = false;
       engineBusy = false;
 
-      status.textContent =
-        "Stockfish could not load. Check the engine files.";
+      updateStatus();
 
     };
 
     engine.postMessage("uci");
 
-  } catch (error) {
+  } catch(error) {
 
     engineError = true;
     engineLoading = false;
-
-    status.textContent =
-      "Unable to start Stockfish. Check the engine folder.";
+    updateStatus();
 
   }
 
 }
 
 // ==========================================
-// GAME STATUS
+// STATUS
 // ==========================================
 
 function updateStatus() {
 
-  if (game.in_checkmate()) {
+  if (gameResult) {
+    status.textContent = "Game finished.";
+  }
 
-    status.textContent =
-      "CHECKMATE! " +
-      (game.turn() === "w" ? "Black" : "White") +
-      " wins!";
+  else if (game.in_checkmate()) {
+    status.textContent = "CHECKMATE!";
+  }
 
-  } else if (game.in_stalemate()) {
+  else if (engineError) {
+    status.textContent = "Stockfish error. Check your engine files.";
+  }
 
-    status.textContent = "Draw by stalemate!";
+  else if (engineLoading) {
+    status.textContent = "Loading Stockfish 19...";
+  }
 
-  } else if (game.in_draw()) {
+  else if (engineBusy || pendingSearch) {
+    status.textContent = "🤖 Computer is thinking...";
+  }
 
-    status.textContent = "Game drawn!";
+  else {
 
-  } else if (engineError) {
+    const name = game.turn() === "w" ? "White" : "Black";
 
-    status.textContent =
-      "Engine error. Check the Stockfish files.";
-
-  } else if (
-    engineBusy ||
-    engineLoading ||
-    pendingSearch
-  ) {
-
-    status.textContent = engineLoading
-      ? "Loading Stockfish..."
-      : "Computer is thinking...";
-
-  } else {
-
-    const name =
-      game.turn() === "w" ? "White" : "Black";
-
-    const playerTurn =
-      game.turn() === playerColor;
+    const playerTurn = game.turn() === playerColor;
 
     status.textContent =
       name +
-      (playerTurn ? " (Your turn)" : " (Computer)") +
-      (game.in_check() ? " — CHECK!" : "");
+      (playerTurn ? " — Your turn" : " — Computer's turn") +
+      (game.in_check() ? " ⚠ CHECK!" : "");
 
   }
+
+  whiteLabel.classList.toggle(
+    "active",
+    !gameResult && game.turn() === "w"
+  );
+
+  blackLabel.classList.toggle(
+    "active",
+    !gameResult && game.turn() === "b"
+  );
 
 }
 
 // ==========================================
-// CHESSBOARD DISPLAY
+// BOARD DISPLAY
 // ==========================================
 
 function renderBoard() {
@@ -779,6 +1072,26 @@ function renderBoard() {
   const cols = playerColor === "w"
     ? [0,1,2,3,4,5,6,7]
     : [7,6,5,4,3,2,1,0];
+
+  let checkedKing = null;
+
+  if (game.in_check()) {
+
+    const kingColor = game.turn();
+
+    position.forEach((row,r) => {
+      row.forEach((piece,c) => {
+        if (
+          piece &&
+          piece.type === "k" &&
+          piece.color === kingColor
+        ) {
+          checkedKing = files[c] + (8-r);
+        }
+      });
+    });
+
+  }
 
   rows.forEach(r => {
 
@@ -797,6 +1110,10 @@ function renderBoard() {
         square.classList.add("selected");
       }
 
+      if (name === checkedKing) {
+        square.classList.add("in-check");
+      }
+
       if (selected) {
 
         const moves = game.moves({
@@ -804,9 +1121,7 @@ function renderBoard() {
           verbose: true
         });
 
-        const possible = moves.find(
-          m => m.to === name
-        );
+        const possible = moves.find(m => m.to === name);
 
         if (possible) {
 
@@ -833,9 +1148,7 @@ function renderBoard() {
 
       }
 
-      square.addEventListener("click", () => {
-        handleClick(name);
-      });
+      square.addEventListener("click", () => handleClick(name));
 
       board.appendChild(square);
 
@@ -843,21 +1156,19 @@ function renderBoard() {
 
   });
 
-  updateStatus();
-
-  // Update history whenever the board is rendered.
-
   renderMoveHistory();
+  updateStatus();
 
 }
 
 // ==========================================
-// HUMAN PLAYER MOVES
+// PLAYER MOVE
 // ==========================================
 
 function handleClick(name) {
 
   if (
+    gameResult ||
     engineBusy ||
     engineLoading ||
     pendingSearch ||
@@ -891,15 +1202,12 @@ function handleClick(name) {
         promotion = (choice || "q").toLowerCase();
 
         if (!["q","r","b","n"].includes(promotion)) {
-
-          status.textContent = "Invalid promotion choice.";
           return;
-
         }
 
       }
 
-      game.move({
+      const played = game.move({
         from: selected,
         to: name,
         promotion: promotion
@@ -907,10 +1215,16 @@ function handleClick(name) {
 
       selected = null;
 
-      renderBoard();
+      if (played) {
 
-      if (!game.game_over()) {
-        scheduleComputerMove();
+        playSound(played.captured ? "capture" : "move");
+
+        renderBoard();
+
+        if (!checkGameResult()) {
+          scheduleComputerMove();
+        }
+
       }
 
       return;
@@ -932,12 +1246,12 @@ function handleClick(name) {
 }
 
 // ==========================================
-// COMPUTER MOVE SCHEDULER
+// COMPUTER SCHEDULER
 // ==========================================
 
 function scheduleComputerMove() {
 
-  if (game.game_over()) return;
+  if (game.game_over() || gameResult) return;
 
   if (thinkingTimer !== null) {
     clearTimeout(thinkingTimer);
@@ -956,7 +1270,7 @@ function scheduleComputerMove() {
 
     updateStatus();
 
-  }, 350);
+  },350);
 
 }
 
@@ -966,14 +1280,10 @@ function scheduleComputerMove() {
 
 function startEngineMove() {
 
-  if (!engineReady || !pendingSearch || engineBusy) {
-    return;
-  }
+  if (!engineReady || !pendingSearch || engineBusy) return;
 
-  if (
-    game.game_over() ||
-    game.turn() !== computerColor
-  ) {
+  if (game.game_over() || gameResult ||
+      game.turn() !== computerColor) {
 
     pendingSearch = false;
     updateStatus();
@@ -984,8 +1294,7 @@ function startEngineMove() {
   pendingSearch = false;
   engineBusy = true;
 
-  const settings =
-    difficultySettings[computerDifficulty];
+  const settings = difficultySettings[computerDifficulty];
 
   engine.postMessage(
     "setoption name Skill Level value " + settings.skill
@@ -1004,16 +1313,14 @@ function startEngineMove() {
 }
 
 // ==========================================
-// STOP ONGOING SEARCH
+// STOP SEARCH
 // ==========================================
 
 function stopEngineSearch() {
 
   if (thinkingTimer !== null) {
-
     clearTimeout(thinkingTimer);
     thinkingTimer = null;
-
   }
 
   pendingSearch = false;
@@ -1021,7 +1328,6 @@ function stopEngineSearch() {
   if (engineBusy && engine) {
 
     discardCurrentMove = true;
-
     engine.postMessage("stop");
 
   }
@@ -1038,12 +1344,13 @@ function restartGame() {
 
   game.reset();
 
+  gameResult = null;
   selected = null;
 
-  playerColor = colorSelect.value;
+  hideResult();
 
-  computerColor =
-    playerColor === "w" ? "b" : "w";
+  playerColor = colorSelect.value;
+  computerColor = playerColor === "w" ? "b" : "w";
 
   computerDifficulty = difficultySelect.value;
 
@@ -1053,6 +1360,8 @@ function restartGame() {
 
   renderBoard();
 
+  playSound("start");
+
   if (playerColor === "b") {
     scheduleComputerMove();
   }
@@ -1060,14 +1369,17 @@ function restartGame() {
 }
 
 // ==========================================
-// UNDO LAST COMPLETE TURN
+// UNDO
 // ==========================================
 
 function undoMove() {
 
   stopEngineSearch();
 
+  gameResult = null;
   selected = null;
+
+  hideResult();
 
   if (game.history().length > 0) {
 
@@ -1077,9 +1389,7 @@ function undoMove() {
       game.history().length > 0 &&
       game.turn() !== playerColor
     ) {
-
       game.undo();
-
     }
 
   }
@@ -1089,17 +1399,74 @@ function undoMove() {
 }
 
 // ==========================================
-// BUTTONS AND SETTINGS
+// RESIGN
 // ==========================================
 
-undoButton.addEventListener(
+function resignGame() {
+
+  if (gameResult || game.game_over()) return;
+
+  const confirmed = confirm(
+    "Are you sure you want to resign this game?"
+  );
+
+  if (!confirmed) return;
+
+  const winner =
+    computerColor === "w" ? "White" : "Black";
+
+  finishGame(
+    "🏳 RESIGNED",
+    "You resigned. " + winner + " wins!",
+    "loss"
+  );
+
+}
+
+// ==========================================
+// DRAW
+// ==========================================
+
+function offerDraw() {
+
+  if (gameResult || game.game_over()) return;
+
+  const confirmed = confirm(
+    "Agree to end this game as a draw?"
+  );
+
+  if (!confirmed) return;
+
+  finishGame(
+    "½ DRAW",
+    "The game ended by mutual agreement.",
+    "draw"
+  );
+
+}
+
+// ==========================================
+// BUTTONS
+// ==========================================
+
+document.getElementById("undo").addEventListener(
   "click",
   undoMove
 );
 
-restartButton.addEventListener(
+document.getElementById("restart").addEventListener(
   "click",
   restartGame
+);
+
+document.getElementById("resign").addEventListener(
+  "click",
+  resignGame
+);
+
+document.getElementById("draw").addEventListener(
+  "click",
+  offerDraw
 );
 
 colorSelect.addEventListener(
@@ -1110,20 +1477,16 @@ colorSelect.addEventListener(
 difficultySelect.addEventListener(
   "change",
   () => {
-
     computerDifficulty = difficultySelect.value;
-
     updateStatus();
-
   }
 );
 
 // ==========================================
-// START WEBSITE
+// START
 // ==========================================
 
 restartGame();
-
 initializeEngine();
 
 </script>
