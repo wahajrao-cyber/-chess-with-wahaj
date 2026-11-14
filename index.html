@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -172,6 +171,11 @@ nav a {
   cursor: pointer;
 }
 
+.controls button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
 #status {
   margin-top: 18px;
   color: #bd9bff;
@@ -265,6 +269,7 @@ footer {
   <div class="board" id="boardGrid"></div>
 
   <div class="controls">
+
     <select id="playerColor">
       <option value="w">Play as White ♔</option>
       <option value="b">Play as Black ♚</option>
@@ -278,15 +283,17 @@ footer {
 
     <button id="undo">↶ Undo</button>
     <button id="restart">↻ New Game</button>
+
   </div>
 
-  <p id="status">Choose your colour and start playing!</p>
+  <p id="status">Loading chess engine...</p>
 </section>
 
 <section class="section" id="features">
   <h2>Explore The Platform</h2>
 
   <div class="features">
+
     <div class="feature">
       <h3>♟ Play Chess</h3>
       <p>Experience the world of chess.</p>
@@ -299,13 +306,14 @@ footer {
 
     <div class="feature">
       <h3>🏆 Leaderboards</h3>
-      <p>Track rankings and achievements.</p>
+      <p>Track rankings and celebrate achievements.</p>
     </div>
 
     <div class="feature">
       <h3>📚 Learn Chess</h3>
       <p>Explore strategies, tactics and openings.</p>
     </div>
+
   </div>
 </section>
 
@@ -316,6 +324,12 @@ footer {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 
 <script>
+
+// ==========================================
+// CHESS WITH WAHAJ
+// Stockfish 19 Computer Engine
+// ==========================================
+
 const game = new Chess();
 
 const board = document.getElementById("boardGrid");
@@ -324,10 +338,23 @@ const status = document.getElementById("status");
 const colorSelect = document.getElementById("playerColor");
 const difficultySelect = document.getElementById("difficulty");
 
+const undoButton = document.getElementById("undo");
+const restartButton = document.getElementById("restart");
+
 let selected = null;
+
 let playerColor = "w";
 let computerColor = "b";
 let computerDifficulty = "medium";
+
+let engine = null;
+let engineReady = false;
+let engineLoading = false;
+let engineError = false;
+let engineBusy = false;
+
+let pendingSearch = false;
+let discardCurrentMove = false;
 let thinkingTimer = null;
 
 const symbols = {
@@ -337,119 +364,170 @@ const symbols = {
   br:"♜", bq:"♛", bk:"♚"
 };
 
-const pieceValues = {
-  p:100,
-  n:320,
-  b:330,
-  r:500,
-  q:900,
-  k:20000
+// ==========================================
+// COMPUTER DIFFICULTY
+// ==========================================
+
+const difficultySettings = {
+
+  easy: {
+    skill: 0,
+    time: 400
+  },
+
+  medium: {
+    skill: 8,
+    time: 900
+  },
+
+  hard: {
+    skill: 20,
+    time: 1800
+  }
+
 };
 
-// Evaluate the position from the computer's perspective.
+// ==========================================
+// STOCKFISH ENGINE INITIALIZATION
+// ==========================================
 
-function evaluatePosition(position) {
+function initializeEngine() {
 
-  if (position.in_checkmate()) {
-    return position.turn() === computerColor
-      ? -100000
-      : 100000;
-  }
+  if (engine || engineLoading || engineError) return;
 
-  if (position.in_draw()) return 0;
+  engineLoading = true;
+  status.textContent = "Loading Stockfish 19...";
 
-  let score = 0;
+  try {
 
-  position.board().forEach(row => {
-    row.forEach(piece => {
-      if (piece) {
-        const value = pieceValues[piece.type];
+    engine = new Worker(
+      "./engine/stockfish-19-lite-single.js"
+    );
 
-        score += piece.color === computerColor
-          ? value
-          : -value;
+    engine.onmessage = function(event) {
+
+      const message = String(event.data).trim();
+
+      // UCI initialization completed.
+
+      if (message === "uciok") {
+
+        engine.postMessage("isready");
+        return;
+
       }
-    });
-  });
 
-  return score;
-}
+      // Engine is ready.
 
-// Create a separate game position for AI calculations.
+      if (message === "readyok") {
 
-function makeCopy(position, move) {
+        engineReady = true;
+        engineLoading = false;
 
-  const copy = new Chess(position.fen());
+        if (pendingSearch) {
+          startEngineMove();
+        } else {
+          updateStatus();
+        }
 
-  const data = {
-    from: move.from,
-    to: move.to
-  };
+        return;
 
-  if (move.promotion) {
-    data.promotion = move.promotion;
+      }
+
+      // Computer has finished calculating.
+
+      if (message.startsWith("bestmove")) {
+
+        engineBusy = false;
+
+        // Ignore an old move if the game was restarted
+        // or undone while Stockfish was thinking.
+
+        if (discardCurrentMove) {
+
+          discardCurrentMove = false;
+
+          if (pendingSearch) {
+            startEngineMove();
+          } else {
+            updateStatus();
+          }
+
+          return;
+        }
+
+        const match = message.match(
+          /^bestmove\s+([a-h][1-8][a-h][1-8][qrbn]?)/
+        );
+
+        if (!match) {
+          renderBoard();
+          return;
+        }
+
+        if (
+          game.game_over() ||
+          game.turn() !== computerColor
+        ) {
+          renderBoard();
+          return;
+        }
+
+        const uciMove = match[1];
+
+        const moveData = {
+          from: uciMove.substring(0, 2),
+          to: uciMove.substring(2, 4)
+        };
+
+        if (uciMove.length === 5) {
+          moveData.promotion = uciMove[4];
+        }
+
+        const played = game.move(moveData);
+
+        selected = null;
+
+        if (played) {
+          renderBoard();
+        } else {
+          status.textContent =
+            "Computer move failed. Please start a new game.";
+        }
+
+      }
+
+    };
+
+    engine.onerror = function() {
+
+      engineError = true;
+      engineLoading = false;
+      engineReady = false;
+      engineBusy = false;
+
+      status.textContent =
+        "Stockfish could not load. Check the engine files.";
+
+    };
+
+    engine.postMessage("uci");
+
+  } catch (error) {
+
+    engineError = true;
+    engineLoading = false;
+
+    status.textContent =
+      "Unable to start Stockfish. Check the engine folder.";
+
   }
 
-  copy.move(data);
-
-  return copy;
 }
 
-// Computer search using minimax and alpha-beta pruning.
-
-function minimax(position, depth, alpha, beta) {
-
-  if (depth === 0 || position.game_over()) {
-    return evaluatePosition(position);
-  }
-
-  const moves = position.moves({ verbose:true });
-
-  const maximizing = position.turn() === computerColor;
-
-  if (maximizing) {
-
-    let best = -Infinity;
-
-    for (const move of moves) {
-
-      const next = makeCopy(position, move);
-
-      best = Math.max(
-        best,
-        minimax(next, depth - 1, alpha, beta)
-      );
-
-      alpha = Math.max(alpha, best);
-
-      if (beta <= alpha) break;
-    }
-
-    return best;
-
-  } else {
-
-    let best = Infinity;
-
-    for (const move of moves) {
-
-      const next = makeCopy(position, move);
-
-      best = Math.min(
-        best,
-        minimax(next, depth - 1, alpha, beta)
-      );
-
-      beta = Math.min(beta, best);
-
-      if (beta <= alpha) break;
-    }
-
-    return best;
-  }
-}
-
-// Update game information.
+// ==========================================
+// GAME STATUS
+// ==========================================
 
 function updateStatus() {
 
@@ -468,26 +546,41 @@ function updateStatus() {
 
     status.textContent = "Game drawn!";
 
-  } else if (thinkingTimer !== null) {
+  } else if (engineError) {
 
-    status.textContent = "Computer is thinking...";
+    status.textContent =
+      "Engine error. Check the Stockfish files.";
+
+  } else if (
+    engineBusy ||
+    engineLoading ||
+    pendingSearch
+  ) {
+
+    status.textContent = engineLoading
+      ? "Loading Stockfish..."
+      : "Computer is thinking...";
 
   } else {
 
-    const turn = game.turn();
+    const name =
+      game.turn() === "w" ? "White" : "Black";
 
-    const name = turn === "w" ? "White" : "Black";
-
-    const playerTurn = turn === playerColor;
+    const playerTurn =
+      game.turn() === playerColor;
 
     status.textContent =
       name +
       (playerTurn ? " (Your turn)" : " (Computer)") +
       (game.in_check() ? " — CHECK!" : "");
+
   }
+
 }
 
-// Draw the chessboard.
+// ==========================================
+// CHESSBOARD DISPLAY
+// ==========================================
 
 function renderBoard() {
 
@@ -509,7 +602,6 @@ function renderBoard() {
     cols.forEach(c => {
 
       const name = files[c] + (8-r);
-
       const piece = position[r][c];
 
       const square = document.createElement("div");
@@ -525,11 +617,13 @@ function renderBoard() {
       if (selected) {
 
         const moves = game.moves({
-          square:selected,
-          verbose:true
+          square: selected,
+          verbose: true
         });
 
-        const possible = moves.find(m => m.to === name);
+        const possible = moves.find(
+          m => m.to === name
+        );
 
         if (possible) {
 
@@ -538,7 +632,9 @@ function renderBoard() {
           } else {
             square.classList.add("legal");
           }
+
         }
+
       }
 
       if (piece) {
@@ -551,6 +647,7 @@ function renderBoard() {
             ? "white-piece"
             : "black-piece"
         );
+
       }
 
       square.addEventListener("click", () => {
@@ -560,16 +657,25 @@ function renderBoard() {
       board.appendChild(square);
 
     });
+
   });
 
   updateStatus();
+
 }
 
-// Handle human moves.
+// ==========================================
+// HUMAN PLAYER MOVES
+// ==========================================
 
 function handleClick(name) {
 
-  if (thinkingTimer !== null) return;
+  if (
+    engineBusy ||
+    engineLoading ||
+    pendingSearch ||
+    thinkingTimer !== null
+  ) return;
 
   if (game.game_over()) return;
 
@@ -578,8 +684,8 @@ function handleClick(name) {
   if (selected) {
 
     const moves = game.moves({
-      square:selected,
-      verbose:true
+      square: selected,
+      verbose: true
     });
 
     const move = moves.find(m => m.to === name);
@@ -598,15 +704,18 @@ function handleClick(name) {
         promotion = (choice || "q").toLowerCase();
 
         if (!["q","r","b","n"].includes(promotion)) {
+
           status.textContent = "Invalid promotion choice.";
           return;
+
         }
+
       }
 
       game.move({
-        from:selected,
-        to:name,
-        promotion:promotion
+        from: selected,
+        to: name,
+        promotion: promotion
       });
 
       selected = null;
@@ -618,7 +727,9 @@ function handleClick(name) {
       }
 
       return;
+
     }
+
   }
 
   const piece = game.get(name);
@@ -630,134 +741,152 @@ function handleClick(name) {
   }
 
   renderBoard();
+
 }
 
-// Schedule the computer's response.
+// ==========================================
+// COMPUTER MOVE SCHEDULER
+// ==========================================
 
 function scheduleComputerMove() {
 
   if (game.game_over()) return;
 
+  if (thinkingTimer !== null) {
+    clearTimeout(thinkingTimer);
+  }
+
   thinkingTimer = setTimeout(() => {
 
     thinkingTimer = null;
+    pendingSearch = true;
 
-    computerMove();
+    if (!engineReady) {
+      initializeEngine();
+    } else {
+      startEngineMove();
+    }
+
+    updateStatus();
 
   }, 350);
 
-  status.textContent = "Computer is thinking...";
 }
 
-// Computer chooses and plays a move.
+// ==========================================
+// STOCKFISH SEARCH
+// ==========================================
 
-function computerMove() {
+function startEngineMove() {
 
-  if (game.game_over()) {
-    renderBoard();
+  if (!engineReady || !pendingSearch || engineBusy) {
     return;
   }
 
-  if (game.turn() !== computerColor) return;
+  if (
+    game.game_over() ||
+    game.turn() !== computerColor
+  ) {
 
-  const moves = game.moves({ verbose:true });
-
-  if (!moves.length) {
-    renderBoard();
+    pendingSearch = false;
+    updateStatus();
     return;
+
   }
 
-  let chosen = null;
+  pendingSearch = false;
+  engineBusy = true;
 
-  if (computerDifficulty === "easy") {
+  const settings =
+    difficultySettings[computerDifficulty];
 
-    chosen = moves[
-      Math.floor(Math.random() * moves.length)
-    ];
+  // Set actual engine playing strength.
 
-  } else {
+  engine.postMessage(
+    "setoption name Skill Level value " + settings.skill
+  );
 
-    const depth =
-      computerDifficulty === "medium" ? 2 : 3;
+  // Send current board position.
 
-    let bestScore = -Infinity;
+  engine.postMessage(
+    "position fen " + game.fen()
+  );
 
-    for (const move of moves) {
+  // Ask Stockfish to calculate a move.
 
-      const next = makeCopy(game, move);
+  engine.postMessage(
+    "go movetime " + settings.time
+  );
 
-      const score = minimax(
-        next,
-        depth - 1,
-        -Infinity,
-        Infinity
-      );
+  updateStatus();
 
-      if (
-        score > bestScore ||
-        (score === bestScore && Math.random() < 0.5)
-      ) {
-
-        bestScore = score;
-        chosen = move;
-      }
-    }
-  }
-
-  if (chosen) {
-
-    const data = {
-      from:chosen.from,
-      to:chosen.to
-    };
-
-    if (chosen.promotion) {
-      data.promotion = chosen.promotion;
-    }
-
-    game.move(data);
-  }
-
-  selected = null;
-
-  renderBoard();
 }
 
-// Start a new game with selected settings.
+// ==========================================
+// STOP AN ONGOING SEARCH SAFELY
+// ==========================================
+
+function stopEngineSearch() {
+
+  if (thinkingTimer !== null) {
+
+    clearTimeout(thinkingTimer);
+    thinkingTimer = null;
+
+  }
+
+  pendingSearch = false;
+
+  if (engineBusy && engine) {
+
+    discardCurrentMove = true;
+
+    engine.postMessage("stop");
+
+  }
+
+}
+
+// ==========================================
+// NEW GAME
+// ==========================================
 
 function restartGame() {
 
-  if (thinkingTimer !== null) {
-    clearTimeout(thinkingTimer);
-    thinkingTimer = null;
-  }
+  stopEngineSearch();
 
   game.reset();
 
   selected = null;
 
   playerColor = colorSelect.value;
-  computerColor = playerColor === "w" ? "b" : "w";
+
+  computerColor =
+    playerColor === "w" ? "b" : "w";
 
   computerDifficulty = difficultySelect.value;
 
+  if (engineReady && engine) {
+    engine.postMessage("ucinewgame");
+  }
+
   renderBoard();
 
-  // If player chooses Black, computer moves first.
+  // Computer moves first when you choose Black.
 
   if (playerColor === "b") {
     scheduleComputerMove();
   }
+
 }
 
-// Undo the last complete turn.
+// ==========================================
+// UNDO LAST COMPLETE TURN
+// ==========================================
 
 function undoMove() {
 
-  if (thinkingTimer !== null) {
-    clearTimeout(thinkingTimer);
-    thinkingTimer = null;
-  }
+  stopEngineSearch();
 
   selected = null;
 
@@ -769,21 +898,27 @@ function undoMove() {
       game.history().length > 0 &&
       game.turn() !== playerColor
     ) {
+
       game.undo();
+
     }
+
   }
 
   renderBoard();
+
 }
 
-// Controls.
+// ==========================================
+// BUTTONS AND SETTINGS
+// ==========================================
 
-document.getElementById("undo").addEventListener(
+undoButton.addEventListener(
   "click",
   undoMove
 );
 
-document.getElementById("restart").addEventListener(
+restartButton.addEventListener(
   "click",
   restartGame
 );
@@ -796,13 +931,23 @@ colorSelect.addEventListener(
 difficultySelect.addEventListener(
   "change",
   () => {
+
     computerDifficulty = difficultySelect.value;
+
+    updateStatus();
+
   }
 );
 
-// Initial game.
+// ==========================================
+// START WEBSITE
+// ==========================================
 
 restartGame();
+
+// Load Stockfish in the background.
+
+initializeEngine();
 
 </script>
 
