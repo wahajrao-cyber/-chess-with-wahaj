@@ -91,7 +91,122 @@ nav a {
   margin-bottom: 25px;
 }
 
-/* GAME LAYOUT */
+/* GAME SETTINGS */
+
+.settings-panel {
+  max-width: 850px;
+  margin: 0 auto 20px;
+  padding: 20px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.settings-panel h3 {
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+  gap: 12px;
+}
+
+.setting-group {
+  text-align: left;
+}
+
+.setting-group label {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 7px;
+}
+
+.setting-group select {
+  width: 100%;
+  padding: 12px;
+  background: #252a36;
+  color: white;
+  border: 1px solid #41495b;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* CHESS CLOCK */
+
+.clocks {
+  max-width: 850px;
+  margin: 0 auto 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.clock {
+  background: #171d2a;
+  border: 2px solid var(--border);
+  padding: 16px;
+  border-radius: 12px;
+  transition: .2s;
+}
+
+.clock.active {
+  border-color: var(--purple);
+  background: #252039;
+  box-shadow: 0 0 18px #9665ef30;
+}
+
+.clock-name {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 7px;
+}
+
+.clock-time {
+  font-size: clamp(28px,6vw,40px);
+  font-weight: bold;
+  font-family: monospace;
+  letter-spacing: 2px;
+}
+
+.clock.low-time .clock-time {
+  color: #ff606a;
+  animation: lowTime .7s infinite alternate;
+}
+
+@keyframes lowTime {
+  from { opacity: 1; }
+  to { opacity: .55; }
+}
+
+/* GAME INFORMATION */
+
+.game-info {
+  max-width: 850px;
+  margin: 0 auto 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  padding: 13px 16px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.player-label {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.player-label.active {
+  color: #c5a5ff;
+  font-weight: bold;
+}
+
+/* BOARD */
 
 .game-layout {
   display: grid;
@@ -166,23 +281,17 @@ nav a {
   text-shadow: 0 0 2px white,1px 1px 2px white;
 }
 
-/* CHECK ANIMATION */
-
 .square.in-check {
   background: #e34d55 !important;
   animation: kingCheck .65s infinite alternate;
 }
 
 @keyframes kingCheck {
-  from {
-    box-shadow: inset 0 0 5px #ff0000;
-  }
-  to {
-    box-shadow: inset 0 0 28px #ff0000;
-  }
+  from { box-shadow: inset 0 0 5px red; }
+  to { box-shadow: inset 0 0 28px red; }
 }
 
-/* CHECKMATE OVERLAY */
+/* RESULT OVERLAY */
 
 .game-overlay {
   position: absolute;
@@ -213,7 +322,7 @@ nav a {
 
 .result-card h2 {
   color: var(--accent);
-  font-size: 29px;
+  font-size: 27px;
   margin-bottom: 12px;
 }
 
@@ -239,14 +348,8 @@ nav a {
 }
 
 @keyframes resultPop {
-  from {
-    transform: scale(.75);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  from { transform: scale(.75); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 /* MOVE HISTORY */
@@ -303,38 +406,6 @@ nav a {
   font-size: 14px;
 }
 
-/* PLAYER INFORMATION */
-
-.game-info {
-  max-width: 850px;
-  margin: 0 auto 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  background: var(--panel);
-  padding: 13px 16px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-}
-
-.player-label {
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.player-label.active {
-  color: #c5a5ff;
-  font-weight: bold;
-}
-
-#status {
-  margin: 20px auto;
-  color: var(--accent);
-  font-size: 17px;
-  min-height: 28px;
-}
-
 /* CONTROLS */
 
 .controls {
@@ -344,21 +415,15 @@ nav a {
   gap: 10px;
   margin: 20px auto;
   flex-wrap: wrap;
-  max-width: 750px;
-}
-
-.controls button,
-.controls select {
-  padding: 12px 14px;
-  border: 1px solid #41495b;
-  border-radius: 8px;
-  background: #252a36;
-  color: white;
-  font-size: 14px;
+  max-width: 850px;
 }
 
 .controls button {
+  padding: 12px 16px;
   border: 0;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
   transition: .2s;
@@ -369,24 +434,17 @@ nav a {
   transform: translateY(-2px);
 }
 
-#undo, #restart {
-  background: var(--purple);
-}
-
-#resign {
-  background: #bd414b;
-}
-
-#draw {
-  background: #287d65;
-}
-
-#soundToggle {
-  background: #384257;
-}
+#undo, #restart { background: var(--purple); }
+#resign { background: #bd414b; }
+#draw { background: #287d65; }
+#soundToggle { background: #384257; }
 
 #status {
+  margin: 20px auto;
+  color: var(--accent);
+  font-size: 17px;
   font-weight: bold;
+  min-height: 28px;
 }
 
 /* FEATURES */
@@ -427,7 +485,6 @@ footer {
 /* MOBILE */
 
 @media(max-width:700px) {
-
   header {
     justify-content: center;
   }
@@ -453,7 +510,7 @@ footer {
     max-height: 240px;
   }
 
-  .game-info {
+  .game-info, .clocks {
     width: min(92vw,480px);
   }
 
@@ -461,10 +518,13 @@ footer {
     gap: 8px;
   }
 
-  .controls button,
-  .controls select {
+  .controls button {
     padding: 11px 10px;
     font-size: 12px;
+  }
+
+  .settings-panel {
+    width: min(92vw,480px);
   }
 }
 </style>
@@ -495,11 +555,76 @@ footer {
 <h2>♟ Chess Arena</h2>
 
 <p style="color:#a5adbd;margin-bottom:20px">
-Challenge the computer and sharpen your skills.
+Choose your opponent, select your time control and play.
 </p>
 
+<!-- GAME SETTINGS -->
+
+<div class="settings-panel">
+  <h3>⚙ Game Settings</h3>
+
+  <div class="settings-grid">
+
+    <div class="setting-group">
+      <label>Opponent</label>
+      <select id="gameMode">
+        <option value="computer">🤖 Computer</option>
+        <option value="human">👥 Two Players</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label>Time Category</label>
+      <select id="timeCategory">
+        <option value="bullet">Bullet</option>
+        <option value="blitz" selected>Blitz</option>
+        <option value="rapid">Rapid</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label>Time Control</label>
+      <select id="timeControl"></select>
+    </div>
+
+    <div class="setting-group" id="colorSetting">
+      <label>Your Colour</label>
+      <select id="playerColor">
+        <option value="w">White ♔</option>
+        <option value="b">Black ♚</option>
+      </select>
+    </div>
+
+    <div class="setting-group" id="difficultySetting">
+      <label>Computer Strength</label>
+      <select id="difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+
+  </div>
+</div>
+
+<!-- CLOCKS -->
+
+<div class="clocks">
+
+  <div class="clock active" id="whiteClock">
+    <div class="clock-name">♔ WHITE</div>
+    <div class="clock-time" id="whiteTime">05:00</div>
+  </div>
+
+  <div class="clock" id="blackClock">
+    <div class="clock-name">♚ BLACK</div>
+    <div class="clock-time" id="blackTime">05:00</div>
+  </div>
+
+</div>
+
 <div class="game-info">
-  <span class="player-label" id="whiteLabel">♔ White</span>
+  <span class="player-label active" id="whiteLabel">♔ White</span>
   <span class="player-label" id="blackLabel">♚ Black</span>
 </div>
 
@@ -531,27 +656,14 @@ Challenge the computer and sharpen your skills.
 </div>
 
 <div class="controls">
-
-  <select id="playerColor">
-    <option value="w">Play as White ♔</option>
-    <option value="b">Play as Black ♚</option>
-  </select>
-
-  <select id="difficulty">
-    <option value="easy">Easy Computer</option>
-    <option value="medium" selected>Medium Computer</option>
-    <option value="hard">Hard Computer</option>
-  </select>
-
   <button id="undo">↶ Undo</button>
   <button id="restart">↻ New Game</button>
   <button id="draw">½ Draw</button>
   <button id="resign">⚑ Resign</button>
   <button id="soundToggle">🔊 Sound ON</button>
-
 </div>
 
-<p id="status">Loading Stockfish...</p>
+<p id="status">Preparing chess game...</p>
 
 </section>
 
@@ -572,8 +684,8 @@ Challenge the computer and sharpen your skills.
   </div>
 
   <div class="feature">
-    <h3>🏆 Leaderboards</h3>
-    <p>Track rankings and achievements.</p>
+    <h3>⏱ Chess Clock</h3>
+    <p>Bullet, Blitz and Rapid time controls.</p>
   </div>
 
   <div class="feature">
@@ -595,7 +707,7 @@ Challenge the computer and sharpen your skills.
 
 // ==========================================
 // CHESS WITH WAHAJ
-// STOCKFISH 19 + PROFESSIONAL INTERFACE
+// CLOCK + HUMAN + STOCKFISH
 // ==========================================
 
 const game = new Chess();
@@ -606,12 +718,22 @@ const historyContainer = document.getElementById("moveHistory");
 
 const colorSelect = document.getElementById("playerColor");
 const difficultySelect = document.getElementById("difficulty");
+const modeSelect = document.getElementById("gameMode");
+const categorySelect = document.getElementById("timeCategory");
+const timeControlSelect = document.getElementById("timeControl");
 
 const whiteLabel = document.getElementById("whiteLabel");
 const blackLabel = document.getElementById("blackLabel");
 
+const whiteClock = document.getElementById("whiteClock");
+const blackClock = document.getElementById("blackClock");
+
+const whiteTimeDisplay = document.getElementById("whiteTime");
+const blackTimeDisplay = document.getElementById("blackTime");
+
 let selected = null;
 
+let gameMode = "computer";
 let playerColor = "w";
 let computerColor = "b";
 let computerDifficulty = "medium";
@@ -629,6 +751,45 @@ let thinkingTimer = null;
 let gameResult = null;
 let soundEnabled = true;
 let audioContext = null;
+
+// CLOCK VARIABLES
+
+let initialTime = 300;
+let increment = 0;
+
+let whiteRemaining = 300000;
+let blackRemaining = 300000;
+
+let clockInterval = null;
+let lastClockUpdate = null;
+let clockRunning = false;
+let activeClock = "w";
+
+// TIME PRESETS
+
+const timePresets = {
+
+  bullet: [
+    {name:"1 + 0 (1 Minute)",time:60,increment:0},
+    {name:"1 + 1 (1 Minute + 1 sec)",time:60,increment:1},
+    {name:"2 + 1 (2 Minutes + 1 sec)",time:120,increment:1}
+  ],
+
+  blitz: [
+    {name:"3 + 0 (3 Minutes)",time:180,increment:0},
+    {name:"3 + 2 (3 Minutes + 2 sec)",time:180,increment:2},
+    {name:"5 + 0 (5 Minutes)",time:300,increment:0},
+    {name:"5 + 3 (5 Minutes + 3 sec)",time:300,increment:3}
+  ],
+
+  rapid: [
+    {name:"10 + 0 (10 Minutes)",time:600,increment:0},
+    {name:"10 + 5 (10 Minutes + 5 sec)",time:600,increment:5},
+    {name:"15 + 10 (15 Minutes + 10 sec)",time:900,increment:10},
+    {name:"30 + 0 (30 Minutes)",time:1800,increment:0}
+  ]
+
+};
 
 const symbols = {
   wp:"♙", wn:"♘", wb:"♗", wr:"♖",
@@ -667,12 +828,12 @@ function playSound(type) {
     }
 
     const sounds = {
-      move: [520,0.09],
-      capture: [260,0.15],
-      check: [740,0.22],
-      mate: [880,0.4],
-      end: [330,0.25],
-      start: [600,0.12]
+      move:[520,0.09],
+      capture:[260,0.15],
+      check:[740,0.22],
+      mate:[880,0.4],
+      end:[330,0.25],
+      start:[600,0.12]
     };
 
     const settings = sounds[type] || sounds.move;
@@ -694,10 +855,7 @@ function playSound(type) {
       );
     }
 
-    gain.gain.setValueAtTime(
-      0.16,
-      audioContext.currentTime
-    );
+    gain.gain.setValueAtTime(0.16,audioContext.currentTime);
 
     gain.gain.exponentialRampToValueAtTime(
       0.001,
@@ -708,13 +866,12 @@ function playSound(type) {
     gain.connect(audioContext.destination);
 
     oscillator.start();
-    oscillator.stop(
-      audioContext.currentTime + settings[1]
-    );
+    oscillator.stop(audioContext.currentTime + settings[1]);
 
   } catch(error) {
     console.log("Audio unavailable");
   }
+
 }
 
 document.getElementById("soundToggle").addEventListener(
@@ -733,13 +890,258 @@ document.getElementById("soundToggle").addEventListener(
 );
 
 // ==========================================
+// TIME CONTROL SETTINGS
+// ==========================================
+
+function updateTimePresets() {
+
+  const category = categorySelect.value;
+
+  const presets = timePresets[category];
+
+  timeControlSelect.innerHTML = "";
+
+  presets.forEach((preset,index) => {
+
+    const option = document.createElement("option");
+
+    option.value = index;
+    option.textContent = preset.name;
+
+    timeControlSelect.appendChild(option);
+
+  });
+
+  if (category === "bullet") {
+    timeControlSelect.value = "0";
+  }
+
+  if (category === "blitz") {
+    timeControlSelect.value = "2";
+  }
+
+  if (category === "rapid") {
+    timeControlSelect.value = "0";
+  }
+
+}
+
+function getSelectedTimeControl() {
+
+  const presets = timePresets[categorySelect.value];
+
+  return presets[Number(timeControlSelect.value)] || presets[0];
+
+}
+
+// ==========================================
+// CLOCK FUNCTIONS
+// ==========================================
+
+function formatTime(milliseconds) {
+
+  const totalSeconds = Math.max(
+    0,
+    Math.ceil(milliseconds / 1000)
+  );
+
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return (
+    String(minutes).padStart(2,"0") +
+    ":" +
+    String(seconds).padStart(2,"0")
+  );
+
+}
+
+function renderClocks() {
+
+  whiteTimeDisplay.textContent = formatTime(whiteRemaining);
+  blackTimeDisplay.textContent = formatTime(blackRemaining);
+
+  whiteClock.classList.toggle(
+    "active",
+    clockRunning && activeClock === "w" && !gameResult
+  );
+
+  blackClock.classList.toggle(
+    "active",
+    clockRunning && activeClock === "b" && !gameResult
+  );
+
+  whiteClock.classList.toggle(
+    "low-time",
+    whiteRemaining <= 10000
+  );
+
+  blackClock.classList.toggle(
+    "low-time",
+    blackRemaining <= 10000
+  );
+
+}
+
+function stopClock() {
+
+  if (clockInterval !== null) {
+    clearInterval(clockInterval);
+    clockInterval = null;
+  }
+
+  clockRunning = false;
+  lastClockUpdate = null;
+
+  renderClocks();
+
+}
+
+function startClock() {
+
+  if (gameResult || game.game_over()) return;
+
+  if (clockInterval !== null) {
+    clearInterval(clockInterval);
+  }
+
+  clockRunning = true;
+  activeClock = game.turn();
+
+  lastClockUpdate = Date.now();
+
+  clockInterval = setInterval(updateClock,50);
+
+  renderClocks();
+
+}
+
+function updateClock() {
+
+  if (!clockRunning || gameResult) return;
+
+  const now = Date.now();
+
+  const elapsed = now - lastClockUpdate;
+
+  lastClockUpdate = now;
+
+  if (activeClock === "w") {
+
+    whiteRemaining -= elapsed;
+
+    if (whiteRemaining <= 0) {
+
+      whiteRemaining = 0;
+
+      renderClocks();
+
+      finishOnTime("w");
+
+      return;
+    }
+
+  } else {
+
+    blackRemaining -= elapsed;
+
+    if (blackRemaining <= 0) {
+
+      blackRemaining = 0;
+
+      renderClocks();
+
+      finishOnTime("b");
+
+      return;
+    }
+
+  }
+
+  renderClocks();
+
+}
+
+function finishOnTime(loser) {
+
+  stopClock();
+
+  const winner = loser === "w" ? "Black" : "White";
+
+  let message;
+
+  if (gameMode === "computer") {
+
+    const playerWon =
+      winner === (playerColor === "w" ? "White" : "Black");
+
+    message = playerWon
+      ? "Congratulations! You won on time."
+      : "Your time has expired. The computer wins.";
+
+  } else {
+
+    message = winner + " wins on time!";
+
+  }
+
+  finishGame(
+    "⏱ TIME OUT!",
+    message,
+    "timeout"
+  );
+
+}
+
+function switchClock(mover) {
+
+  if (gameResult) return;
+
+  if (mover === "w") {
+    whiteRemaining += increment * 1000;
+  } else {
+    blackRemaining += increment * 1000;
+  }
+
+  activeClock = game.turn();
+
+  lastClockUpdate = Date.now();
+
+  clockRunning = true;
+
+  renderClocks();
+
+}
+
+function resetClock() {
+
+  stopClock();
+
+  const selectedControl = getSelectedTimeControl();
+
+  initialTime = selectedControl.time;
+  increment = selectedControl.increment;
+
+  whiteRemaining = initialTime * 1000;
+  blackRemaining = initialTime * 1000;
+
+  activeClock = "w";
+
+  renderClocks();
+
+}
+
+// ==========================================
 // GAME ENDING
 // ==========================================
 
-function finishGame(title, message, result) {
+function finishGame(title,message,result) {
+
+  if (gameResult) return;
 
   gameResult = result;
 
+  stopClock();
   stopEngineSearch();
 
   selected = null;
@@ -756,11 +1158,13 @@ function finishGame(title, message, result) {
 }
 
 function hideResult() {
+
   document.getElementById("gameOverlay").classList.remove("show");
+
 }
 
 // ==========================================
-// CHECKMATE AND CHECK DETECTION
+// CHECKMATE AND DRAW DETECTION
 // ==========================================
 
 function checkGameResult() {
@@ -770,15 +1174,27 @@ function checkGameResult() {
     const winner =
       game.turn() === "w" ? "Black" : "White";
 
-    const playerWon = winner ===
-      (playerColor === "w" ? "White" : "Black");
+    let message;
+
+    if (gameMode === "computer") {
+
+      const playerWon =
+        winner === (playerColor === "w" ? "White" : "Black");
+
+      message = playerWon
+        ? "Congratulations! You defeated the computer."
+        : "The computer wins this game. Try again!";
+
+    } else {
+
+      message = winner + " wins by checkmate!";
+
+    }
 
     finishGame(
       "♛ CHECKMATE!",
-      playerWon
-        ? "Congratulations! You defeated the computer."
-        : "The computer wins this game. Try again!",
-      playerWon ? "win" : "loss"
+      message,
+      "win"
     );
 
     playSound("mate");
@@ -787,20 +1203,24 @@ function checkGameResult() {
   }
 
   if (game.in_stalemate()) {
+
     finishGame(
       "DRAW!",
       "The game ended in stalemate.",
       "draw"
     );
+
     return true;
   }
 
   if (game.in_draw()) {
+
     finishGame(
       "DRAW!",
       "The game ended in a draw.",
       "draw"
     );
+
     return true;
   }
 
@@ -809,6 +1229,7 @@ function checkGameResult() {
   }
 
   return false;
+
 }
 
 // ==========================================
@@ -830,6 +1251,7 @@ function renderMoveHistory() {
   }
 
   const table = document.createElement("table");
+
   table.className = "history-table";
 
   table.innerHTML = `
@@ -861,7 +1283,8 @@ function renderMoveHistory() {
     black.className = "black-move";
     black.textContent = moves[i + 1] || "";
 
-    row.append(number, white, black);
+    row.append(number,white,black);
+
     tbody.appendChild(row);
 
   }
@@ -881,6 +1304,7 @@ function initializeEngine() {
   if (engine || engineLoading || engineError) return;
 
   engineLoading = true;
+
   updateStatus();
 
   try {
@@ -894,7 +1318,9 @@ function initializeEngine() {
       const message = String(event.data).trim();
 
       if (message === "uciok") {
+
         engine.postMessage("isready");
+
         return;
       }
 
@@ -929,25 +1355,32 @@ function initializeEngine() {
           return;
         }
 
+        if (
+          gameResult ||
+          game.game_over() ||
+          gameMode !== "computer" ||
+          game.turn() !== computerColor
+        ) {
+
+          renderBoard();
+
+          return;
+        }
+
         const match = message.match(
           /^bestmove\s+([a-h][1-8][a-h][1-8][qrbn]?)/
         );
 
         if (!match) {
-          renderBoard();
-          return;
-        }
 
-        if (
-          gameResult ||
-          game.game_over() ||
-          game.turn() !== computerColor
-        ) {
           renderBoard();
+
           return;
         }
 
         const uciMove = match[1];
+
+        const mover = game.turn();
 
         const moveData = {
           from: uciMove.substring(0,2),
@@ -965,6 +1398,8 @@ function initializeEngine() {
         if (played) {
 
           playSound(played.captured ? "capture" : "move");
+
+          switchClock(mover);
 
           renderBoard();
 
@@ -997,6 +1432,7 @@ function initializeEngine() {
 
     engineError = true;
     engineLoading = false;
+
     updateStatus();
 
   }
@@ -1010,35 +1446,49 @@ function initializeEngine() {
 function updateStatus() {
 
   if (gameResult) {
+
     status.textContent = "Game finished.";
+
   }
 
-  else if (game.in_checkmate()) {
-    status.textContent = "CHECKMATE!";
-  }
+  else if (engineError && gameMode === "computer") {
 
-  else if (engineError) {
     status.textContent = "Stockfish error. Check your engine files.";
+
   }
 
-  else if (engineLoading) {
+  else if (engineLoading && gameMode === "computer") {
+
     status.textContent = "Loading Stockfish 19...";
+
   }
 
   else if (engineBusy || pendingSearch) {
+
     status.textContent = "🤖 Computer is thinking...";
+
   }
 
   else {
 
     const name = game.turn() === "w" ? "White" : "Black";
 
-    const playerTurn = game.turn() === playerColor;
+    if (gameMode === "human") {
 
-    status.textContent =
-      name +
-      (playerTurn ? " — Your turn" : " — Computer's turn") +
-      (game.in_check() ? " ⚠ CHECK!" : "");
+      status.textContent =
+        name + "'s turn" +
+        (game.in_check() ? " ⚠ CHECK!" : "");
+
+    } else {
+
+      const playerTurn = game.turn() === playerColor;
+
+      status.textContent =
+        name +
+        (playerTurn ? " — Your turn" : " — Computer's turn") +
+        (game.in_check() ? " ⚠ CHECK!" : "");
+
+    }
 
   }
 
@@ -1063,13 +1513,17 @@ function renderBoard() {
   board.innerHTML = "";
 
   const position = game.board();
+
   const files = "abcdefgh";
 
-  const rows = playerColor === "w"
+  const orientation =
+    gameMode === "computer" ? playerColor : "w";
+
+  const rows = orientation === "w"
     ? [0,1,2,3,4,5,6,7]
     : [7,6,5,4,3,2,1,0];
 
-  const cols = playerColor === "w"
+  const cols = orientation === "w"
     ? [0,1,2,3,4,5,6,7]
     : [7,6,5,4,3,2,1,0];
 
@@ -1080,15 +1534,21 @@ function renderBoard() {
     const kingColor = game.turn();
 
     position.forEach((row,r) => {
+
       row.forEach((piece,c) => {
+
         if (
           piece &&
           piece.type === "k" &&
           piece.color === kingColor
         ) {
+
           checkedKing = files[c] + (8-r);
+
         }
+
       });
+
     });
 
   }
@@ -1098,6 +1558,7 @@ function renderBoard() {
     cols.forEach(c => {
 
       const name = files[c] + (8-r);
+
       const piece = position[r][c];
 
       const square = document.createElement("div");
@@ -1117,8 +1578,8 @@ function renderBoard() {
       if (selected) {
 
         const moves = game.moves({
-          square: selected,
-          verbose: true
+          square:selected,
+          verbose:true
         });
 
         const possible = moves.find(m => m.to === name);
@@ -1148,7 +1609,10 @@ function renderBoard() {
 
       }
 
-      square.addEventListener("click", () => handleClick(name));
+      square.addEventListener(
+        "click",
+        () => handleClick(name)
+      );
 
       board.appendChild(square);
 
@@ -1157,7 +1621,10 @@ function renderBoard() {
   });
 
   renderMoveHistory();
+
   updateStatus();
+
+  renderClocks();
 
 }
 
@@ -1177,18 +1644,26 @@ function handleClick(name) {
 
   if (game.game_over()) return;
 
-  if (game.turn() !== playerColor) return;
+  if (
+    gameMode === "computer" &&
+    game.turn() !== playerColor
+  ) return;
 
   if (selected) {
 
     const moves = game.moves({
-      square: selected,
-      verbose: true
+      square:selected,
+      verbose:true
     });
 
     const move = moves.find(m => m.to === name);
 
     if (move) {
+
+      // Check the active clock before accepting the move.
+      updateClock();
+
+      if (gameResult) return;
 
       let promotion = "q";
 
@@ -1207,10 +1682,12 @@ function handleClick(name) {
 
       }
 
+      const mover = game.turn();
+
       const played = game.move({
-        from: selected,
-        to: name,
-        promotion: promotion
+        from:selected,
+        to:name,
+        promotion:promotion
       });
 
       selected = null;
@@ -1219,10 +1696,16 @@ function handleClick(name) {
 
         playSound(played.captured ? "capture" : "move");
 
+        switchClock(mover);
+
         renderBoard();
 
         if (!checkGameResult()) {
-          scheduleComputerMove();
+
+          if (gameMode === "computer") {
+            scheduleComputerMove();
+          }
+
         }
 
       }
@@ -1235,10 +1718,14 @@ function handleClick(name) {
 
   const piece = game.get(name);
 
-  if (piece && piece.color === playerColor) {
+  if (piece && piece.color === game.turn()) {
+
     selected = name;
+
   } else {
+
     selected = null;
+
   }
 
   renderBoard();
@@ -1251,7 +1738,12 @@ function handleClick(name) {
 
 function scheduleComputerMove() {
 
-  if (game.game_over() || gameResult) return;
+  if (
+    game.game_over() ||
+    gameResult ||
+    gameMode !== "computer" ||
+    game.turn() !== computerColor
+  ) return;
 
   if (thinkingTimer !== null) {
     clearTimeout(thinkingTimer);
@@ -1260,12 +1752,17 @@ function scheduleComputerMove() {
   thinkingTimer = setTimeout(() => {
 
     thinkingTimer = null;
+
     pendingSearch = true;
 
     if (!engineReady) {
+
       initializeEngine();
+
     } else {
+
       startEngineMove();
+
     }
 
     updateStatus();
@@ -1282,16 +1779,23 @@ function startEngineMove() {
 
   if (!engineReady || !pendingSearch || engineBusy) return;
 
-  if (game.game_over() || gameResult ||
-      game.turn() !== computerColor) {
+  if (
+    game.game_over() ||
+    gameResult ||
+    gameMode !== "computer" ||
+    game.turn() !== computerColor
+  ) {
 
     pendingSearch = false;
+
     updateStatus();
+
     return;
 
   }
 
   pendingSearch = false;
+
   engineBusy = true;
 
   const settings = difficultySettings[computerDifficulty];
@@ -1319,8 +1823,11 @@ function startEngineMove() {
 function stopEngineSearch() {
 
   if (thinkingTimer !== null) {
+
     clearTimeout(thinkingTimer);
+
     thinkingTimer = null;
+
   }
 
   pendingSearch = false;
@@ -1328,6 +1835,7 @@ function stopEngineSearch() {
   if (engineBusy && engine) {
 
     discardCurrentMove = true;
+
     engine.postMessage("stop");
 
   }
@@ -1342,17 +1850,25 @@ function restartGame() {
 
   stopEngineSearch();
 
+  stopClock();
+
   game.reset();
 
   gameResult = null;
+
   selected = null;
 
   hideResult();
 
+  gameMode = modeSelect.value;
+
   playerColor = colorSelect.value;
+
   computerColor = playerColor === "w" ? "b" : "w";
 
   computerDifficulty = difficultySelect.value;
+
+  resetClock();
 
   if (engineReady && engine) {
     engine.postMessage("ucinewgame");
@@ -1362,8 +1878,17 @@ function restartGame() {
 
   playSound("start");
 
-  if (playerColor === "b") {
+  // White's clock starts immediately.
+  startClock();
+
+  // Computer starts if the user selected Black.
+  if (
+    gameMode === "computer" &&
+    playerColor === "b"
+  ) {
+
     scheduleComputerMove();
+
   }
 
 }
@@ -1374,27 +1899,52 @@ function restartGame() {
 
 function undoMove() {
 
+  if (gameResult === "timeout") return;
+
   stopEngineSearch();
 
+  stopClock();
+
   gameResult = null;
+
   selected = null;
 
   hideResult();
 
-  if (game.history().length > 0) {
+  const historyLength = game.history().length;
+
+  if (historyLength > 0) {
 
     game.undo();
 
     if (
+      gameMode === "computer" &&
       game.history().length > 0 &&
       game.turn() !== playerColor
     ) {
+
       game.undo();
+
     }
 
   }
 
+  // Restore the clock to the original time control.
+  // Undo does not restore previously spent thinking time.
+  resetClock();
+
   renderBoard();
+
+  startClock();
+
+  if (
+    gameMode === "computer" &&
+    game.turn() === computerColor
+  ) {
+
+    scheduleComputerMove();
+
+  }
 
 }
 
@@ -1412,12 +1962,25 @@ function resignGame() {
 
   if (!confirmed) return;
 
-  const winner =
-    computerColor === "w" ? "White" : "Black";
+  const loser = game.turn();
+
+  const winner = loser === "w" ? "Black" : "White";
+
+  let message;
+
+  if (gameMode === "computer") {
+
+    message = "You resigned. The computer wins!";
+
+  } else {
+
+    message = winner + " wins by resignation!";
+
+  }
 
   finishGame(
     "🏳 RESIGNED",
-    "You resigned. " + winner + " wins!",
+    message,
     "loss"
   );
 
@@ -1432,16 +1995,36 @@ function offerDraw() {
   if (gameResult || game.game_over()) return;
 
   const confirmed = confirm(
-    "Agree to end this game as a draw?"
+    gameMode === "human"
+      ? "Do both players agree to a draw?"
+      : "Agree to end this game as a draw?"
   );
 
   if (!confirmed) return;
 
   finishGame(
     "½ DRAW",
-    "The game ended by mutual agreement.",
+    "The game ended by agreement.",
     "draw"
   );
+
+}
+
+// ==========================================
+// GAME MODE SETTINGS
+// ==========================================
+
+function updateGameMode() {
+
+  const humanMode = modeSelect.value === "human";
+
+  document.getElementById("colorSetting").style.display =
+    humanMode ? "none" : "block";
+
+  document.getElementById("difficultySetting").style.display =
+    humanMode ? "none" : "block";
+
+  restartGame();
 
 }
 
@@ -1469,6 +2052,11 @@ document.getElementById("draw").addEventListener(
   offerDraw
 );
 
+modeSelect.addEventListener(
+  "change",
+  updateGameMode
+);
+
 colorSelect.addEventListener(
   "change",
   restartGame
@@ -1478,15 +2066,30 @@ difficultySelect.addEventListener(
   "change",
   () => {
     computerDifficulty = difficultySelect.value;
-    updateStatus();
   }
+);
+
+categorySelect.addEventListener(
+  "change",
+  () => {
+    updateTimePresets();
+    restartGame();
+  }
+);
+
+timeControlSelect.addEventListener(
+  "change",
+  restartGame
 );
 
 // ==========================================
 // START
 // ==========================================
 
-restartGame();
+updateTimePresets();
+
+updateGameMode();
+
 initializeEngine();
 
 </script>
