@@ -324,9 +324,25 @@ function renderBoard() {
       }
 
       if (piece) {
-        square.textContent =
-          symbols[piece.color + piece.type];
-      }
+  square.textContent =
+    symbols[piece.color + piece.type];
+
+  square.style.fontSize = "clamp(30px, 10vw, 52px)";
+  square.style.display = "flex";
+  square.style.alignItems = "center";
+  square.style.justifyContent = "center";
+
+  if (piece.color === "w") {
+    square.style.color = "#ffffff";
+    square.style.textShadow =
+      "0 0 2px #111, 1px 1px 2px #111";
+  } else {
+    square.style.color = "#151515";
+    square.style.textShadow =
+      "0 0 2px #ffffff, 1px 1px 2px #ffffff";
+  }
+}
+      
 
       square.addEventListener("click", () => {
         handleClick(name);
