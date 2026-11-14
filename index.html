@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,18 +82,27 @@ nav a {
   margin-bottom: 25px;
 }
 
-.board {
-  width: 92vw;
-  max-width: 480px;
-  aspect-ratio: 1;
+/* CHESSBOARD AND HISTORY LAYOUT */
+
+.game-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 480px) minmax(220px, 300px);
+  justify-content: center;
+  align-items: start;
+  gap: 22px;
+  max-width: 850px;
   margin: 0 auto;
+}
+
+.board {
+  width: 100%;
+  aspect-ratio: 1;
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
   grid-template-rows: repeat(8, minmax(0, 1fr));
   border: 5px solid #252a36;
   border-radius: 7px;
   overflow: hidden;
-  min-width: 0;
 }
 
 .square {
@@ -106,12 +116,16 @@ nav a {
   padding: 0;
   font-size: clamp(30px, 10vw, 52px);
   cursor: pointer;
-  aspect-ratio: 1;
   user-select: none;
 }
 
-.light { background: #e6d8c0; }
-.dark { background: #795b88; }
+.light {
+  background: #e6d8c0;
+}
+
+.dark {
+  background: #795b88;
+}
 
 .square.selected {
   outline: 4px solid #a8e66c;
@@ -135,14 +149,79 @@ nav a {
 }
 
 .square.white-piece {
-  color: #ffffff;
+  color: white;
   text-shadow: 0 0 2px #111, 1px 1px 2px #111;
 }
 
 .square.black-piece {
   color: #151515;
-  text-shadow: 0 0 2px #ffffff, 1px 1px 2px #ffffff;
+  text-shadow: 0 0 2px white, 1px 1px 2px white;
 }
+
+/* MOVE HISTORY PANEL */
+
+.history-panel {
+  background: #151a25;
+  border: 1px solid #292f40;
+  border-radius: 12px;
+  padding: 18px;
+  text-align: left;
+  width: 100%;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.history-panel h3 {
+  color: #bd9bff;
+  font-size: 19px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.history-table th {
+  color: #a5adbd;
+  padding: 10px 5px;
+  border-bottom: 1px solid #353b4b;
+  text-align: center;
+}
+
+.history-table td {
+  padding: 10px 5px;
+  text-align: center;
+  border-bottom: 1px solid #292f40;
+}
+
+.history-table tr:nth-child(even) {
+  background: #1c2230;
+}
+
+.history-table .move-number {
+  color: #9099aa;
+  width: 20%;
+}
+
+.history-table .white-move {
+  color: white;
+}
+
+.history-table .black-move {
+  color: #bd9bff;
+}
+
+.empty-history {
+  text-align: center;
+  color: #8992a3;
+  padding: 25px 5px;
+  font-size: 14px;
+}
+
+/* CONTROLS */
 
 .controls {
   display: flex;
@@ -151,7 +230,7 @@ nav a {
   gap: 12px;
   margin: 20px auto;
   flex-wrap: wrap;
-  max-width: 500px;
+  max-width: 700px;
 }
 
 .controls button,
@@ -173,7 +252,6 @@ nav a {
 
 .controls button:disabled {
   opacity: .5;
-  cursor: not-allowed;
 }
 
 #status {
@@ -182,6 +260,8 @@ nav a {
   font-size: 18px;
   min-height: 28px;
 }
+
+/* FEATURES */
 
 .features {
   display: grid;
@@ -216,7 +296,10 @@ footer {
   margin-top: 45px;
 }
 
-@media(max-width:480px) {
+/* MOBILE LAYOUT */
+
+@media(max-width:700px) {
+
   header {
     justify-content: center;
   }
@@ -224,6 +307,22 @@ footer {
   nav a {
     margin: 0 7px;
     font-size: 14px;
+  }
+
+  .game-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .board {
+    width: min(92vw, 480px);
+  }
+
+  .history-panel {
+    width: min(92vw, 480px);
+    max-height: 240px;
   }
 
   .controls {
@@ -260,13 +359,30 @@ footer {
 </section>
 
 <section class="section" id="board">
+
   <h2>♟ Chess Arena</h2>
 
   <p style="color:#a5adbd;margin-bottom:20px">
     Challenge the computer and sharpen your skills.
   </p>
 
-  <div class="board" id="boardGrid"></div>
+  <div class="game-layout">
+
+    <div class="board" id="boardGrid"></div>
+
+    <div class="history-panel">
+
+      <h3>📜 Move History</h3>
+
+      <div id="moveHistory">
+        <div class="empty-history">
+          No moves yet. Start playing!
+        </div>
+      </div>
+
+    </div>
+
+  </div>
 
   <div class="controls">
 
@@ -287,9 +403,11 @@ footer {
   </div>
 
   <p id="status">Loading chess engine...</p>
+
 </section>
 
 <section class="section" id="features">
+
   <h2>Explore The Platform</h2>
 
   <div class="features">
@@ -315,6 +433,7 @@ footer {
     </div>
 
   </div>
+
 </section>
 
 <footer>
@@ -327,13 +446,14 @@ footer {
 
 // ==========================================
 // CHESS WITH WAHAJ
-// Stockfish 19 Computer Engine
+// STOCKFISH 19 + MOVE HISTORY
 // ==========================================
 
 const game = new Chess();
 
 const board = document.getElementById("boardGrid");
 const status = document.getElementById("status");
+const historyContainer = document.getElementById("moveHistory");
 
 const colorSelect = document.getElementById("playerColor");
 const difficultySelect = document.getElementById("difficulty");
@@ -388,6 +508,77 @@ const difficultySettings = {
 };
 
 // ==========================================
+// MOVE HISTORY
+// ==========================================
+
+function renderMoveHistory() {
+
+  const moves = game.history();
+
+  historyContainer.innerHTML = "";
+
+  if (moves.length === 0) {
+
+    historyContainer.innerHTML = `
+      <div class="empty-history">
+        No moves yet. Start playing!
+      </div>
+    `;
+
+    return;
+  }
+
+  const table = document.createElement("table");
+
+  table.className = "history-table";
+
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>White</th>
+        <th>Black</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  `;
+
+  const tbody = table.querySelector("tbody");
+
+  for (let i = 0; i < moves.length; i += 2) {
+
+    const row = document.createElement("tr");
+
+    const number = document.createElement("td");
+    number.className = "move-number";
+    number.textContent = Math.floor(i / 2) + 1;
+
+    const white = document.createElement("td");
+    white.className = "white-move";
+    white.textContent = moves[i] || "";
+
+    const black = document.createElement("td");
+    black.className = "black-move";
+    black.textContent = moves[i + 1] || "";
+
+    row.appendChild(number);
+    row.appendChild(white);
+    row.appendChild(black);
+
+    tbody.appendChild(row);
+
+  }
+
+  historyContainer.appendChild(table);
+
+  // Keep the latest move visible.
+
+  historyContainer.scrollTop =
+    historyContainer.scrollHeight;
+
+}
+
+// ==========================================
 // STOCKFISH ENGINE INITIALIZATION
 // ==========================================
 
@@ -408,16 +599,12 @@ function initializeEngine() {
 
       const message = String(event.data).trim();
 
-      // UCI initialization completed.
-
       if (message === "uciok") {
 
         engine.postMessage("isready");
         return;
 
       }
-
-      // Engine is ready.
 
       if (message === "readyok") {
 
@@ -434,14 +621,9 @@ function initializeEngine() {
 
       }
 
-      // Computer has finished calculating.
-
       if (message.startsWith("bestmove")) {
 
         engineBusy = false;
-
-        // Ignore an old move if the game was restarted
-        // or undone while Stockfish was thinking.
 
         if (discardCurrentMove) {
 
@@ -454,6 +636,7 @@ function initializeEngine() {
           }
 
           return;
+
         }
 
         const match = message.match(
@@ -662,6 +845,10 @@ function renderBoard() {
 
   updateStatus();
 
+  // Update history whenever the board is rendered.
+
+  renderMoveHistory();
+
 }
 
 // ==========================================
@@ -800,19 +987,13 @@ function startEngineMove() {
   const settings =
     difficultySettings[computerDifficulty];
 
-  // Set actual engine playing strength.
-
   engine.postMessage(
     "setoption name Skill Level value " + settings.skill
   );
 
-  // Send current board position.
-
   engine.postMessage(
     "position fen " + game.fen()
   );
-
-  // Ask Stockfish to calculate a move.
 
   engine.postMessage(
     "go movetime " + settings.time
@@ -823,7 +1004,7 @@ function startEngineMove() {
 }
 
 // ==========================================
-// STOP AN ONGOING SEARCH SAFELY
+// STOP ONGOING SEARCH
 // ==========================================
 
 function stopEngineSearch() {
@@ -871,8 +1052,6 @@ function restartGame() {
   }
 
   renderBoard();
-
-  // Computer moves first when you choose Black.
 
   if (playerColor === "b") {
     scheduleComputerMove();
@@ -944,8 +1123,6 @@ difficultySelect.addEventListener(
 // ==========================================
 
 restartGame();
-
-// Load Stockfish in the background.
 
 initializeEngine();
 
