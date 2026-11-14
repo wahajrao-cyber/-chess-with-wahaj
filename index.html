@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chess With Wahaj</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0b0e14;
+  color: #f1f3f8;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 22px 7%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #252a36;
+}
+
+.logo {
+  font-size: 23px;
+  font-weight: bold;
+  color: #b38cff;
+}
+
+nav a {
+  color: #c5c9d3;
+  text-decoration: none;
+  margin-left: 20px;
+}
+
+.hero {
+  text-align: center;
+  padding: 75px 20px 45px;
+}
+
+.hero h1 {
+  font-size: clamp(36px, 7vw, 62px);
+  margin-bottom: 18px;
+}
+
+.hero h1 span {
+  color: #ad82ff;
+}
+
+.hero p {
+  color: #a5adbd;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 25px;
+  padding: 14px 28px;
+  background: #9665ef;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.section {
+  padding: 45px 7%;
+  text-align: center;
+}
+
+.section h2 {
+  font-size: 29px;
+  margin-bottom: 25px;
+}
+
+.board {
+  width: min(88vw, 420px);
+  aspect-ratio: 1;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  border: 5px solid #252a36;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.square {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: clamp(20px, 6vw, 40px);
+  cursor: pointer;
+}
+
+.light { background: #e6d8c0; }
+.dark { background: #795b88; }
+
+.square.selected {
+  outline: 4px solid #a8e66c;
+  outline-offset: -4px;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.feature {
+  background: #151a25;
+  border: 1px solid #292f40;
+  padding: 28px 18px;
+  border-radius: 12px;
+}
+
+.feature h3 {
+  color: #bd9bff;
+  margin-bottom: 12px;
+}
+
+.feature p {
+  color: #a5adbd;
+  line-height: 1.6;
+}
+
+footer {
+  text-align: center;
+  padding: 30px;
+  color: #81899a;
+  border-top: 1px solid #252a36;
+  margin-top: 45px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">♟ Chess With Wahaj</div>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#board">Board</a>
+    <a href="#features">Features</a>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <h1>Think. Play. <span>Conquer.</span></h1>
+  <p>
+    Welcome to Chess With Wahaj.<br>
+    A platform for chess lovers, thinkers and future champions.
+  </p>
+  <a href="#board" class="btn">Explore Chess</a>
+</section>
+
+<section class="section" id="board">
+  <h2>♟ Chess Board</h2>
+  <p style="color:#a5adbd;margin-bottom:20px">
+    Explore the board. Select any square.
+  </p>
+
+  <div class="board" id="boardGrid"></div>
+
+  <p id="status" style="margin-top:18px;color:#bd9bff">
+    Your chess journey starts here.
+  </p>
+</section>
+
+<section class="section" id="features">
+  <h2>Explore The Platform</h2>
+
+  <div class="features">
+    <div class="feature">
+      <h3>♟ Play Chess</h3>
+      <p>Experience the world of chess.</p>
+    </div>
+
+    <div class="feature">
+      <h3>🤖 Play Computer</h3>
+      <p>Challenge your thinking and improve.</p>
+    </div>
+
+    <div class="feature">
+      <h3>🏆 Leaderboards</h3>
+      <p>Track rankings and celebrate achievements.</p>
+    </div>
+
+    <div class="feature">
+      <h3>📚 Learn Chess</h3>
+      <p>Explore strategies, tactics and openings.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 Chess With Wahaj | All Rights Reserved
+</footer>
+
+<script>
+const pieces = [
+  "♜","♞","♝","♛","♚","♝","♞","♜",
+  "♟","♟","♟","♟","♟","♟","♟","♟",
+  "","","","","","","","",
+  "","","","","","","","",
+  "","","","","","","","",
+  "","","","","","","","",
+  "♙","♙","♙","♙","♙","♙","♙","♙",
+  "♖","♘","♗","♕","♔","♗","♘","♖"
+];
+
+const board = document.getElementById("boardGrid");
+const status = document.getElementById("status");
+
+let selected = null;
+
+pieces.forEach((piece, i) => {
+  const square = document.createElement("div");
+  const row = Math.floor(i / 8);
+  const col = i % 8;
+
+  square.className = "square " +
+    ((row + col) % 2 === 0 ? "light" : "dark");
+
+  square.textContent = piece;
+
+  square.addEventListener("click", () => {
+    if (selected !== null) {
+      selected.classList.remove("selected");
+    }
+
+    if (selected === square) {
+      selected = null;
+      status.textContent = "Selection cleared.";
+    } else {
+      selected = square;
+      square.classList.add("selected");
+      status.textContent = "Square selected!";
+    }
+  });
+
+  board.appendChild(square);
+});
+</script>
+
+</body>
+</html>
