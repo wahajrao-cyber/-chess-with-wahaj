@@ -25,6 +25,8 @@ header {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #252a36;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .logo {
@@ -36,7 +38,7 @@ header {
 nav a {
   color: #c5c9d3;
   text-decoration: none;
-  margin-left: 20px;
+  margin-left: 15px;
 }
 
 .hero {
@@ -89,18 +91,24 @@ nav a {
   grid-template-columns: repeat(8, minmax(0, 1fr));
   grid-template-rows: repeat(8, minmax(0, 1fr));
   border: 5px solid #252a36;
-  border-radius: 5px;
+  border-radius: 7px;
   overflow: hidden;
   min-width: 0;
 }
 
-  
 .square {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: clamp(20px, 6vw, 40px);
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  padding: 0;
+  font-size: clamp(30px, 10vw, 52px);
   cursor: pointer;
+  aspect-ratio: 1;
+  user-select: none;
 }
 
 .light { background: #e6d8c0; }
@@ -109,6 +117,66 @@ nav a {
 .square.selected {
   outline: 4px solid #a8e66c;
   outline-offset: -4px;
+}
+
+.square.legal::after {
+  content: "";
+  position: absolute;
+  width: 24%;
+  height: 24%;
+  border-radius: 50%;
+  background: #228b50;
+  opacity: .8;
+  pointer-events: none;
+}
+
+.square.capture {
+  outline: 4px solid #e6b94b;
+  outline-offset: -4px;
+}
+
+.square.white-piece {
+  color: #ffffff;
+  text-shadow: 0 0 2px #111, 1px 1px 2px #111;
+}
+
+.square.black-piece {
+  color: #151515;
+  text-shadow: 0 0 2px #ffffff, 1px 1px 2px #ffffff;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px auto;
+  flex-wrap: wrap;
+  max-width: 500px;
+}
+
+.controls button,
+.controls select {
+  padding: 12px 15px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background: #252a36;
+  color: white;
+  font-size: 15px;
+}
+
+.controls button {
+  background: #9665ef;
+  border: 0;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#status {
+  margin-top: 18px;
+  color: #bd9bff;
+  font-size: 18px;
+  min-height: 28px;
 }
 
 .features {
@@ -143,6 +211,27 @@ footer {
   border-top: 1px solid #252a36;
   margin-top: 45px;
 }
+
+@media(max-width:480px) {
+  header {
+    justify-content: center;
+  }
+
+  nav a {
+    margin: 0 7px;
+    font-size: 14px;
+  }
+
+  .controls {
+    gap: 8px;
+  }
+
+  .controls button,
+  .controls select {
+    padding: 11px 10px;
+    font-size: 13px;
+  }
+}
 </style>
 </head>
 
@@ -163,20 +252,35 @@ footer {
     Welcome to Chess With Wahaj.<br>
     A platform for chess lovers, thinkers and future champions.
   </p>
-  <a href="#board" class="btn">Explore Chess</a>
+  <a href="#board" class="btn">Play Chess</a>
 </section>
 
 <section class="section" id="board">
-  <h2>♟ Chess Board</h2>
+  <h2>♟ Chess Arena</h2>
+
   <p style="color:#a5adbd;margin-bottom:20px">
-    Explore the board. Select any square.
+    Challenge the computer and sharpen your skills.
   </p>
 
   <div class="board" id="boardGrid"></div>
 
-  <p id="status" style="margin-top:18px;color:#bd9bff">
-    Your chess journey starts here.
-  </p>
+  <div class="controls">
+    <select id="playerColor">
+      <option value="w">Play as White ♔</option>
+      <option value="b">Play as Black ♚</option>
+    </select>
+
+    <select id="difficulty">
+      <option value="easy">Easy Computer</option>
+      <option value="medium" selected>Medium Computer</option>
+      <option value="hard">Hard Computer</option>
+    </select>
+
+    <button id="undo">↶ Undo</button>
+    <button id="restart">↻ New Game</button>
+  </div>
+
+  <p id="status">Choose your colour and start playing!</p>
 </section>
 
 <section class="section" id="features">
@@ -195,7 +299,7 @@ footer {
 
     <div class="feature">
       <h3>🏆 Leaderboards</h3>
-      <p>Track rankings and celebrate achievements.</p>
+      <p>Track rankings and achievements.</p>
     </div>
 
     <div class="feature">
@@ -211,54 +315,20 @@ footer {
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 
-<style>
-.square {
-  position: relative;
-  border: 0;
-  padding: 0;
-  width: 100%;
-  aspect-ratio: 1;
-}
-
-.square.legal::after {
-  content: "";
-  position: absolute;
-  width: 24%;
-  height: 24%;
-  border-radius: 50%;
-  background: #228b50;
-  opacity: 0.75;
-}
-
-.square.capture {
-  outline: 4px solid #e6b94b;
-  outline-offset: -4px;
-}
-
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-
-.controls button {
-  padding: 12px 20px;
-  border: 0;
-  border-radius: 8px;
-  background: #9665ef;
-  color: white;
-  font-weight: bold;
-}
-</style>
-
 <script>
 const game = new Chess();
+
 const board = document.getElementById("boardGrid");
 const status = document.getElementById("status");
 
+const colorSelect = document.getElementById("playerColor");
+const difficultySelect = document.getElementById("difficulty");
+
 let selected = null;
+let playerColor = "w";
+let computerColor = "b";
+let computerDifficulty = "medium";
+let thinkingTimer = null;
 
 const symbols = {
   wp:"♙", wn:"♘", wb:"♗", wr:"♖",
@@ -267,58 +337,202 @@ const symbols = {
   br:"♜", bq:"♛", bk:"♚"
 };
 
-const controls = document.createElement("div");
-controls.className = "controls";
-controls.innerHTML = `
-  <button id="undo">↶ Undo</button>
-  <button id="restart">↻ Restart</button>
-`;
-board.after(controls);
+const pieceValues = {
+  p:100,
+  n:320,
+  b:330,
+  r:500,
+  q:900,
+  k:20000
+};
+
+// Evaluate the position from the computer's perspective.
+
+function evaluatePosition(position) {
+
+  if (position.in_checkmate()) {
+    return position.turn() === computerColor
+      ? -100000
+      : 100000;
+  }
+
+  if (position.in_draw()) return 0;
+
+  let score = 0;
+
+  position.board().forEach(row => {
+    row.forEach(piece => {
+      if (piece) {
+        const value = pieceValues[piece.type];
+
+        score += piece.color === computerColor
+          ? value
+          : -value;
+      }
+    });
+  });
+
+  return score;
+}
+
+// Create a separate game position for AI calculations.
+
+function makeCopy(position, move) {
+
+  const copy = new Chess(position.fen());
+
+  const data = {
+    from: move.from,
+    to: move.to
+  };
+
+  if (move.promotion) {
+    data.promotion = move.promotion;
+  }
+
+  copy.move(data);
+
+  return copy;
+}
+
+// Computer search using minimax and alpha-beta pruning.
+
+function minimax(position, depth, alpha, beta) {
+
+  if (depth === 0 || position.game_over()) {
+    return evaluatePosition(position);
+  }
+
+  const moves = position.moves({ verbose:true });
+
+  const maximizing = position.turn() === computerColor;
+
+  if (maximizing) {
+
+    let best = -Infinity;
+
+    for (const move of moves) {
+
+      const next = makeCopy(position, move);
+
+      best = Math.max(
+        best,
+        minimax(next, depth - 1, alpha, beta)
+      );
+
+      alpha = Math.max(alpha, best);
+
+      if (beta <= alpha) break;
+    }
+
+    return best;
+
+  } else {
+
+    let best = Infinity;
+
+    for (const move of moves) {
+
+      const next = makeCopy(position, move);
+
+      best = Math.min(
+        best,
+        minimax(next, depth - 1, alpha, beta)
+      );
+
+      beta = Math.min(beta, best);
+
+      if (beta <= alpha) break;
+    }
+
+    return best;
+  }
+}
+
+// Update game information.
 
 function updateStatus() {
+
   if (game.in_checkmate()) {
+
     status.textContent =
       "CHECKMATE! " +
-      (game.turn() === "w" ? "Black" : "White") + " wins!";
+      (game.turn() === "w" ? "Black" : "White") +
+      " wins!";
+
   } else if (game.in_stalemate()) {
+
     status.textContent = "Draw by stalemate!";
+
   } else if (game.in_draw()) {
+
     status.textContent = "Game drawn!";
+
+  } else if (thinkingTimer !== null) {
+
+    status.textContent = "Computer is thinking...";
+
   } else {
+
+    const turn = game.turn();
+
+    const name = turn === "w" ? "White" : "Black";
+
+    const playerTurn = turn === playerColor;
+
     status.textContent =
-      (game.turn() === "w" ? "White" : "Black") +
-      " to move" +
+      name +
+      (playerTurn ? " (Your turn)" : " (Computer)") +
       (game.in_check() ? " — CHECK!" : "");
   }
 }
 
+// Draw the chessboard.
+
 function renderBoard() {
+
   board.innerHTML = "";
 
   const position = game.board();
   const files = "abcdefgh";
 
-  position.forEach((rank, r) => {
-    rank.forEach((piece, c) => {
+  const rows = playerColor === "w"
+    ? [0,1,2,3,4,5,6,7]
+    : [7,6,5,4,3,2,1,0];
+
+  const cols = playerColor === "w"
+    ? [0,1,2,3,4,5,6,7]
+    : [7,6,5,4,3,2,1,0];
+
+  rows.forEach(r => {
+
+    cols.forEach(c => {
+
       const name = files[c] + (8-r);
+
+      const piece = position[r][c];
+
       const square = document.createElement("div");
 
-      square.className = "square " +
-        ((r+c)%2===0 ? "light" : "dark");
+      square.className =
+        "square " +
+        ((r+c)%2 === 0 ? "light" : "dark");
 
       if (selected === name) {
         square.classList.add("selected");
       }
 
       if (selected) {
+
         const moves = game.moves({
-          square: selected,
-          verbose: true
+          square:selected,
+          verbose:true
         });
 
         const possible = moves.find(m => m.to === name);
 
         if (possible) {
+
           if (possible.captured) {
             square.classList.add("capture");
           } else {
@@ -328,52 +542,54 @@ function renderBoard() {
       }
 
       if (piece) {
-  square.textContent =
-    symbols[piece.color + piece.type];
 
-  square.style.fontSize = "clamp(30px, 10vw, 52px)";
-  square.style.display = "flex";
-  square.style.alignItems = "center";
-  square.style.justifyContent = "center";
+        square.textContent =
+          symbols[piece.color + piece.type];
 
-  if (piece.color === "w") {
-    square.style.color = "#ffffff";
-    square.style.textShadow =
-      "0 0 2px #111, 1px 1px 2px #111";
-  } else {
-    square.style.color = "#151515";
-    square.style.textShadow =
-      "0 0 2px #ffffff, 1px 1px 2px #ffffff";
-  }
-}
-      
+        square.classList.add(
+          piece.color === "w"
+            ? "white-piece"
+            : "black-piece"
+        );
+      }
 
       square.addEventListener("click", () => {
         handleClick(name);
       });
 
       board.appendChild(square);
+
     });
   });
 
   updateStatus();
 }
 
+// Handle human moves.
+
 function handleClick(name) {
+
+  if (thinkingTimer !== null) return;
+
   if (game.game_over()) return;
 
+  if (game.turn() !== playerColor) return;
+
   if (selected) {
+
     const moves = game.moves({
-      square: selected,
-      verbose: true
+      square:selected,
+      verbose:true
     });
 
     const move = moves.find(m => m.to === name);
 
     if (move) {
+
       let promotion = "q";
 
       if (move.flags.includes("p")) {
+
         const choice = prompt(
           "Promote to: q (Queen), r (Rook), b (Bishop), n (Knight)",
           "q"
@@ -388,20 +604,26 @@ function handleClick(name) {
       }
 
       game.move({
-        from: selected,
-        to: name,
-        promotion: promotion
+        from:selected,
+        to:name,
+        promotion:promotion
       });
 
       selected = null;
+
       renderBoard();
+
+      if (!game.game_over()) {
+        scheduleComputerMove();
+      }
+
       return;
     }
   }
 
   const piece = game.get(name);
 
-  if (piece && piece.color === game.turn()) {
+  if (piece && piece.color === playerColor) {
     selected = name;
   } else {
     selected = null;
@@ -410,21 +632,179 @@ function handleClick(name) {
   renderBoard();
 }
 
-document.getElementById("undo").onclick = () => {
-  game.undo();
-  selected = null;
-  renderBoard();
-};
+// Schedule the computer's response.
 
-document.getElementById("restart").onclick = () => {
+function scheduleComputerMove() {
+
+  if (game.game_over()) return;
+
+  thinkingTimer = setTimeout(() => {
+
+    thinkingTimer = null;
+
+    computerMove();
+
+  }, 350);
+
+  status.textContent = "Computer is thinking...";
+}
+
+// Computer chooses and plays a move.
+
+function computerMove() {
+
+  if (game.game_over()) {
+    renderBoard();
+    return;
+  }
+
+  if (game.turn() !== computerColor) return;
+
+  const moves = game.moves({ verbose:true });
+
+  if (!moves.length) {
+    renderBoard();
+    return;
+  }
+
+  let chosen = null;
+
+  if (computerDifficulty === "easy") {
+
+    chosen = moves[
+      Math.floor(Math.random() * moves.length)
+    ];
+
+  } else {
+
+    const depth =
+      computerDifficulty === "medium" ? 2 : 3;
+
+    let bestScore = -Infinity;
+
+    for (const move of moves) {
+
+      const next = makeCopy(game, move);
+
+      const score = minimax(
+        next,
+        depth - 1,
+        -Infinity,
+        Infinity
+      );
+
+      if (
+        score > bestScore ||
+        (score === bestScore && Math.random() < 0.5)
+      ) {
+
+        bestScore = score;
+        chosen = move;
+      }
+    }
+  }
+
+  if (chosen) {
+
+    const data = {
+      from:chosen.from,
+      to:chosen.to
+    };
+
+    if (chosen.promotion) {
+      data.promotion = chosen.promotion;
+    }
+
+    game.move(data);
+  }
+
+  selected = null;
+
+  renderBoard();
+}
+
+// Start a new game with selected settings.
+
+function restartGame() {
+
+  if (thinkingTimer !== null) {
+    clearTimeout(thinkingTimer);
+    thinkingTimer = null;
+  }
+
   game.reset();
+
   selected = null;
+
+  playerColor = colorSelect.value;
+  computerColor = playerColor === "w" ? "b" : "w";
+
+  computerDifficulty = difficultySelect.value;
+
   renderBoard();
-};
 
-renderBoard();
+  // If player chooses Black, computer moves first.
+
+  if (playerColor === "b") {
+    scheduleComputerMove();
+  }
+}
+
+// Undo the last complete turn.
+
+function undoMove() {
+
+  if (thinkingTimer !== null) {
+    clearTimeout(thinkingTimer);
+    thinkingTimer = null;
+  }
+
+  selected = null;
+
+  if (game.history().length > 0) {
+
+    game.undo();
+
+    if (
+      game.history().length > 0 &&
+      game.turn() !== playerColor
+    ) {
+      game.undo();
+    }
+  }
+
+  renderBoard();
+}
+
+// Controls.
+
+document.getElementById("undo").addEventListener(
+  "click",
+  undoMove
+);
+
+document.getElementById("restart").addEventListener(
+  "click",
+  restartGame
+);
+
+colorSelect.addEventListener(
+  "change",
+  restartGame
+);
+
+difficultySelect.addEventListener(
+  "change",
+  () => {
+    computerDifficulty = difficultySelect.value;
+  }
+);
+
+// Initial game.
+
+restartGame();
+
 </script>
-
 
 </body>
 </html>
