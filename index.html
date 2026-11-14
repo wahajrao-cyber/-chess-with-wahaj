@@ -205,51 +205,207 @@ footer {
   © 2026 Chess With Wahaj | All Rights Reserved
 </footer>
 
-<script>
-const pieces = [
-  "♜","♞","♝","♛","♚","♝","♞","♜",
-  "♟","♟","♟","♟","♟","♟","♟","♟",
-  "","","","","","","","",
-  "","","","","","","","",
-  "","","","","","","","",
-  "","","","","","","","",
-  "♙","♙","♙","♙","♙","♙","♙","♙",
-  "♖","♘","♗","♕","♔","♗","♘","♖"
-];
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+
+<style>
+.square {
+  position: relative;
+  border: 0;
+  padding: 0;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.square.legal::after {
+  content: "";
+  position: absolute;
+  width: 24%;
+  height: 24%;
+  border-radius: 50%;
+  background: #228b50;
+  opacity: 0.75;
+}
+
+.square.capture {
+  outline: 4px solid #e6b94b;
+  outline-offset: -4px;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.controls button {
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: #9665ef;
+  color: white;
+  font-weight: bold;
+}
+</style>
+
+<script>
+const game = new Chess();
 const board = document.getElementById("boardGrid");
 const status = document.getElementById("status");
 
 let selected = null;
 
-pieces.forEach((piece, i) => {
-  const square = document.createElement("div");
-  const row = Math.floor(i / 8);
-  const col = i % 8;
+const symbols = {
+  wp:"♙", wn:"♘", wb:"♗", wr:"♖",
+  wq:"♕", wk:"♔",
+  bp:"♟", bn:"♞", bb:"♝",
+  br:"♜", bq:"♛", bk:"♚"
+};
 
-  square.className = "square " +
-    ((row + col) % 2 === 0 ? "light" : "dark");
+const controls = document.createElement("div");
+controls.className = "controls";
+controls.innerHTML = `
+  <button id="undo">↶ Undo</button>
+  <button id="restart">↻ Restart</button>
+`;
+board.after(controls);
 
-  square.textContent = piece;
+function updateStatus() {
+  if (game.in_checkmate()) {
+    status.textContent =
+      "CHECKMATE! " +
+      (game.turn() === "w" ? "Black" : "White") + " wins!";
+  } else if (game.in_stalemate()) {
+    status.textContent = "Draw by stalemate!";
+  } else if (game.in_draw()) {
+    status.textContent = "Game drawn!";
+  } else {
+    status.textContent =
+      (game.turn() === "w" ? "White" : "Black") +
+      " to move" +
+      (game.in_check() ? " — CHECK!" : "");
+  }
+}
 
-  square.addEventListener("click", () => {
-    if (selected !== null) {
-      selected.classList.remove("selected");
-    }
+function renderBoard() {
+  board.innerHTML = "";
 
-    if (selected === square) {
-      selected = null;
-      status.textContent = "Selection cleared.";
-    } else {
-      selected = square;
-      square.classList.add("selected");
-      status.textContent = "Square selected!";
-    }
+  const position = game.board();
+  const files = "abcdefgh";
+
+  position.forEach((rank, r) => {
+    rank.forEach((piece, c) => {
+      const name = files[c] + (8-r);
+      const square = document.createElement("div");
+
+      square.className = "square " +
+        ((r+c)%2===0 ? "light" : "dark");
+
+      if (selected === name) {
+        square.classList.add("selected");
+      }
+
+      if (selected) {
+        const moves = game.moves({
+          square: selected,
+          verbose: true
+        });
+
+        const possible = moves.find(m => m.to === name);
+
+        if (possible) {
+          if (possible.captured) {
+            square.classList.add("capture");
+          } else {
+            square.classList.add("legal");
+          }
+        }
+      }
+
+      if (piece) {
+        square.textContent =
+          symbols[piece.color + piece.type];
+      }
+
+      square.addEventListener("click", () => {
+        handleClick(name);
+      });
+
+      board.appendChild(square);
+    });
   });
 
-  board.appendChild(square);
-});
+  updateStatus();
+}
+
+function handleClick(name) {
+  if (game.game_over()) return;
+
+  if (selected) {
+    const moves = game.moves({
+      square: selected,
+      verbose: true
+    });
+
+    const move = moves.find(m => m.to === name);
+
+    if (move) {
+      let promotion = "q";
+
+      if (move.flags.includes("p")) {
+        const choice = prompt(
+          "Promote to: q (Queen), r (Rook), b (Bishop), n (Knight)",
+          "q"
+        );
+
+        promotion = (choice || "q").toLowerCase();
+
+        if (!["q","r","b","n"].includes(promotion)) {
+          status.textContent = "Invalid promotion choice.";
+          return;
+        }
+      }
+
+      game.move({
+        from: selected,
+        to: name,
+        promotion: promotion
+      });
+
+      selected = null;
+      renderBoard();
+      return;
+    }
+  }
+
+  const piece = game.get(name);
+
+  if (piece && piece.color === game.turn()) {
+    selected = name;
+  } else {
+    selected = null;
+  }
+
+  renderBoard();
+}
+
+document.getElementById("undo").onclick = () => {
+  game.undo();
+  selected = null;
+  renderBoard();
+};
+
+document.getElementById("restart").onclick = () => {
+  game.reset();
+  selected = null;
+  renderBoard();
+};
+
+renderBoard();
 </script>
+
 
 </body>
 </html>
