@@ -7,525 +7,91 @@
 <title>Chess With Wahaj</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  --bg: #0b0e14;
-  --panel: #151a25;
-  --border: #292f40;
-  --purple: #9665ef;
-  --accent: #bd9bff;
-  --muted: #a5adbd;
-}
-
-body {
-  background: var(--bg);
-  color: #f1f3f8;
-  font-family: Arial, sans-serif;
-}
-
-header {
-  padding: 20px 7%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #252a36;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.logo {
-  font-size: 23px;
-  font-weight: bold;
-  color: var(--accent);
-}
-
-nav a {
-  color: #c5c9d3;
-  text-decoration: none;
-  margin-left: 15px;
-}
-
-.hero {
-  text-align: center;
-  padding: 65px 20px 40px;
-}
-
-.hero h1 {
-  font-size: clamp(36px, 7vw, 62px);
-  margin-bottom: 18px;
-}
-
-.hero h1 span {
-  color: #ad82ff;
-}
-
-.hero p {
-  color: var(--muted);
-  font-size: 17px;
-  line-height: 1.7;
-}
-
-.btn {
-  display: inline-block;
-  margin-top: 25px;
-  padding: 14px 28px;
-  background: var(--purple);
-  color: white;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.section {
-  padding: 40px 7%;
-  text-align: center;
-}
-
-.section h2 {
-  font-size: 29px;
-  margin-bottom: 25px;
-}
-
-/* GAME SETTINGS */
-
-.settings-panel {
-  max-width: 850px;
-  margin: 0 auto 20px;
-  padding: 20px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-
-.settings-panel h3 {
-  color: var(--accent);
-  margin-bottom: 16px;
-}
-
-.settings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
-  gap: 12px;
-}
-
-.setting-group {
-  text-align: left;
-}
-
-.setting-group label {
-  display: block;
-  color: var(--muted);
-  font-size: 13px;
-  margin-bottom: 7px;
-}
-
-.setting-group select {
-  width: 100%;
-  padding: 12px;
-  background: #252a36;
-  color: white;
-  border: 1px solid #41495b;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-/* CHESS CLOCK */
-
-.clocks {
-  max-width: 850px;
-  margin: 0 auto 15px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.clock {
-  background: #171d2a;
-  border: 2px solid var(--border);
-  padding: 16px;
-  border-radius: 12px;
-  transition: .2s;
-}
-
-.clock.active {
-  border-color: var(--purple);
-  background: #252039;
-  box-shadow: 0 0 18px #9665ef30;
-}
-
-.clock-name {
-  color: var(--muted);
-  font-size: 14px;
-  margin-bottom: 7px;
-}
-
-.clock-time {
-  font-size: clamp(28px,6vw,40px);
-  font-weight: bold;
-  font-family: monospace;
-  letter-spacing: 2px;
-}
-
-.clock.low-time .clock-time {
-  color: #ff606a;
-  animation: lowTime .7s infinite alternate;
-}
-
-@keyframes lowTime {
-  from { opacity: 1; }
-  to { opacity: .55; }
-}
-
-/* GAME INFORMATION */
-
-.game-info {
-  max-width: 850px;
-  margin: 0 auto 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  background: var(--panel);
-  padding: 13px 16px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-}
-
-.player-label {
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.player-label.active {
-  color: #c5a5ff;
-  font-weight: bold;
-}
-
-/* BOARD */
-
-.game-layout {
-  display: grid;
-  grid-template-columns: minmax(0,480px) minmax(220px,300px);
-  justify-content: center;
-  align-items: start;
-  gap: 22px;
-  max-width: 850px;
-  margin: auto;
-}
-
-.board-container {
-  width: 100%;
-  position: relative;
-}
-
-.board {
-  width: 100%;
-  aspect-ratio: 1;
-  display: grid;
-  grid-template-columns: repeat(8,minmax(0,1fr));
-  grid-template-rows: repeat(8,minmax(0,1fr));
-  border: 5px solid #252a36;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 12px 35px #0007;
-}
-
-.square {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 0;
-  min-height: 0;
-  font-size: clamp(27px,8vw,52px);
-  cursor: pointer;
-  user-select: none;
-  transition: background .15s;
-}
-
-.light { background: #e6d8c0; }
-.dark { background: #795b88; }
-
-.square.selected {
-  background: #a8e66c !important;
-}
-
-.square.legal::after {
-  content: "";
-  position: absolute;
-  width: 24%;
-  height: 24%;
-  border-radius: 50%;
-  background: #228b50;
-  opacity: .8;
-  pointer-events: none;
-}
-
-.square.capture {
-  outline: 4px solid #e6b94b;
-  outline-offset: -4px;
-}
-
-.square.white-piece {
-  color: white;
-  text-shadow: 0 0 2px #111,1px 1px 2px #111;
-}
-
-.square.black-piece {
-  color: #151515;
-  text-shadow: 0 0 2px white,1px 1px 2px white;
-}
-
-.square.in-check {
-  background: #e34d55 !important;
-  animation: kingCheck .65s infinite alternate;
-}
-
-@keyframes kingCheck {
-  from { box-shadow: inset 0 0 5px red; }
-  to { box-shadow: inset 0 0 28px red; }
-}
-
-/* RESULT OVERLAY */
-
-.game-overlay {
-  position: absolute;
-  inset: 0;
-  background: #080a10dd;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 5;
-  border-radius: 8px;
-  backdrop-filter: blur(5px);
-}
-
-.game-overlay.show {
-  display: flex;
-  animation: fadeIn .4s ease;
-}
-
-.result-card {
-  background: #1c2230;
-  border: 1px solid #7652b9;
-  padding: 30px 20px;
-  width: 85%;
-  border-radius: 16px;
-  text-align: center;
-  animation: resultPop .45s ease;
-}
-
-.result-card h2 {
-  color: var(--accent);
-  font-size: 27px;
-  margin-bottom: 12px;
-}
-
-.result-card p {
-  color: var(--muted);
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-
-.result-card button {
-  padding: 12px 22px;
-  background: var(--purple);
-  border: 0;
-  border-radius: 8px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes resultPop {
-  from { transform: scale(.75); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-/* MOVE HISTORY */
-
-.history-panel {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 18px;
-  text-align: left;
-  width: 100%;
-  max-height: 480px;
-  overflow-y: auto;
-}
-
-.history-panel h3 {
-  color: var(--accent);
-  font-size: 19px;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.history-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.history-table th {
-  color: var(--muted);
-  padding: 10px 5px;
-  border-bottom: 1px solid #353b4b;
-  text-align: center;
-}
-
-.history-table td {
-  padding: 10px 5px;
-  text-align: center;
-  border-bottom: 1px solid var(--border);
-}
-
-.history-table tr:nth-child(even) {
-  background: #1c2230;
-}
-
-.move-number { color: #9099aa; }
-.white-move { color: white; }
-.black-move { color: var(--accent); }
-
-.empty-history {
-  text-align: center;
-  color: #8992a3;
-  padding: 25px 5px;
-  font-size: 14px;
-}
-
-/* CONTROLS */
-
-.controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin: 20px auto;
-  flex-wrap: wrap;
-  max-width: 850px;
-}
-
-.controls button {
-  padding: 12px 16px;
-  border: 0;
-  border-radius: 8px;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: .2s;
-}
-
-.controls button:hover {
-  filter: brightness(1.2);
-  transform: translateY(-2px);
-}
-
-#undo, #restart { background: var(--purple); }
-#resign { background: #bd414b; }
-#draw { background: #287d65; }
-#soundToggle { background: #384257; }
-
-#status {
-  margin: 20px auto;
-  color: var(--accent);
-  font-size: 17px;
-  font-weight: bold;
-  min-height: 28px;
-}
-
-/* FEATURES */
-
-.features {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(210px,1fr));
-  gap: 18px;
-  max-width: 1000px;
-  margin: auto;
-}
-
-.feature {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  padding: 28px 18px;
-  border-radius: 12px;
-}
-
-.feature h3 {
-  color: var(--accent);
-  margin-bottom: 12px;
-}
-
-.feature p {
-  color: var(--muted);
-  line-height: 1.6;
-}
-
-footer {
-  text-align: center;
-  padding: 30px;
-  color: #81899a;
-  border-top: 1px solid #252a36;
-  margin-top: 45px;
-}
-
-/* MOBILE */
-
-@media(max-width:700px) {
-  header {
-    justify-content: center;
-  }
-
-  nav a {
-    margin: 0 7px;
-    font-size: 14px;
-  }
-
-  .game-layout {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-  }
-
-  .board-container {
-    width: min(92vw,480px);
-  }
-
-  .history-panel {
-    width: min(92vw,480px);
-    max-height: 240px;
-  }
-
-  .game-info, .clocks {
-    width: min(92vw,480px);
-  }
-
-  .controls {
-    gap: 8px;
-  }
-
-  .controls button {
-    padding: 11px 10px;
-    font-size: 12px;
-  }
-
-  .settings-panel {
-    width: min(92vw,480px);
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0e14;--panel:#151a25;--border:#292f40;--purple:#9665ef;--accent:#bd9bff;--muted:#a5adbd}
+body{background:var(--bg);color:#f1f3f8;font-family:Arial,sans-serif}
+header{padding:20px 7%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #252a36;flex-wrap:wrap;gap:15px}
+.logo{font-size:23px;font-weight:bold;color:var(--accent)}
+nav a{color:#c5c9d3;text-decoration:none;margin-left:15px}
+.hero{text-align:center;padding:65px 20px 40px}
+.hero h1{font-size:clamp(36px,7vw,62px);margin-bottom:18px}
+.hero h1 span{color:#ad82ff}
+.hero p{color:var(--muted);font-size:17px;line-height:1.7}
+.btn{display:inline-block;margin-top:25px;padding:14px 28px;background:var(--purple);color:white;border-radius:8px;text-decoration:none;font-weight:bold}
+.section{padding:40px 7%;text-align:center}
+.section h2{font-size:29px;margin-bottom:25px}
+.settings-panel,.history-panel,.online-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px}
+.settings-panel{max-width:850px;margin:0 auto 20px}
+.settings-panel h3,.online-panel h3{color:var(--accent);margin-bottom:16px}
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.setting-group{text-align:left}
+.setting-group label{display:block;color:var(--muted);font-size:13px;margin-bottom:7px}
+.setting-group select,.online-panel input{width:100%;padding:12px;background:#252a36;color:white;border:1px solid #41495b;border-radius:8px;font-size:14px}
+.online-panel{max-width:850px;margin:0 auto 20px;text-align:left}
+.online-panel p{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:12px}
+.online-actions{display:flex;gap:10px;flex-wrap:wrap}
+.online-actions input{flex:1;min-width:150px}
+.online-actions button,.online-panel button{padding:12px 16px;border:0;border-radius:8px;background:var(--purple);color:white;font-weight:bold;cursor:pointer}
+#onlineStatus{margin-top:14px;color:var(--accent);font-weight:bold}
+#roomDisplay{font-size:22px;color:white;letter-spacing:3px;margin:10px 0}
+.clocks{max-width:850px;margin:0 auto 15px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.clock{background:#171d2a;border:2px solid var(--border);padding:16px;border-radius:12px;transition:.2s}
+.clock.active{border-color:var(--purple);background:#252039;box-shadow:0 0 18px #9665ef30}
+.clock-name{color:var(--muted);font-size:14px;margin-bottom:7px}
+.clock-time{font-size:clamp(28px,6vw,40px);font-weight:bold;font-family:monospace;letter-spacing:2px}
+.clock.low-time .clock-time{color:#ff606a;animation:lowTime .7s infinite alternate}
+@keyframes lowTime{to{opacity:.55}}
+.game-info{max-width:850px;margin:0 auto 15px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);padding:13px 16px;border:1px solid var(--border);border-radius:9px}
+.player-label{color:var(--muted);font-size:14px}
+.player-label.active{color:#c5a5ff;font-weight:bold}
+.game-layout{display:grid;grid-template-columns:minmax(0,480px) minmax(220px,300px);justify-content:center;align-items:start;gap:22px;max-width:850px;margin:auto}
+.board-container{width:100%;position:relative}
+.board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));border:5px solid #252a36;border-radius:8px;overflow:hidden;box-shadow:0 12px 35px #0007}
+.square{position:relative;display:flex;justify-content:center;align-items:center;min-width:0;min-height:0;font-size:clamp(27px,8vw,52px);cursor:pointer;user-select:none}
+.light{background:#e6d8c0}.dark{background:#795b88}
+.square.selected{background:#a8e66c!important}
+.square.legal:after{content:"";position:absolute;width:24%;height:24%;border-radius:50%;background:#228b50;opacity:.8;pointer-events:none}
+.square.capture{outline:4px solid #e6b94b;outline-offset:-4px}
+.square.white-piece{color:white;text-shadow:0 0 2px #111,1px 1px 2px #111}
+.square.black-piece{color:#151515;text-shadow:0 0 2px white,1px 1px 2px white}
+.square.in-check{background:#e34d55!important;animation:kingCheck .65s infinite alternate}
+@keyframes kingCheck{to{box-shadow:inset 0 0 28px red}}
+.game-overlay{position:absolute;inset:0;background:#080a10dd;display:none;justify-content:center;align-items:center;z-index:5;border-radius:8px;backdrop-filter:blur(5px)}
+.game-overlay.show{display:flex;animation:fadeIn .4s ease}
+.result-card{background:#1c2230;border:1px solid #7652b9;padding:30px 20px;width:85%;border-radius:16px;text-align:center}
+.result-card h2{color:var(--accent);font-size:27px;margin-bottom:12px}
+.result-card p{color:var(--muted);margin-bottom:20px;line-height:1.5}
+.result-card button{padding:12px 22px;background:var(--purple);border:0;border-radius:8px;color:white;font-weight:bold;cursor:pointer}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.history-panel{text-align:left;width:100%;max-height:480px;overflow-y:auto}
+.history-panel h3{color:var(--accent);font-size:19px;margin-bottom:15px;text-align:center}
+.history-table{width:100%;border-collapse:collapse;font-size:14px}
+.history-table th{color:var(--muted);padding:10px 5px;border-bottom:1px solid #353b4b;text-align:center}
+.history-table td{padding:10px 5px;text-align:center;border-bottom:1px solid var(--border)}
+.history-table tr:nth-child(even){background:#1c2230}
+.move-number{color:#9099aa}.white-move{color:white}.black-move{color:var(--accent)}
+.empty-history{text-align:center;color:#8992a3;padding:25px 5px;font-size:14px}
+.controls{display:flex;justify-content:center;align-items:center;gap:10px;margin:20px auto;flex-wrap:wrap;max-width:850px}
+.controls button{padding:12px 16px;border:0;border-radius:8px;color:white;font-size:14px;font-weight:bold;cursor:pointer}
+.controls button:hover{filter:brightness(1.2);transform:translateY(-2px)}
+#undo,#restart{background:var(--purple)}
+#resign{background:#bd414b}#draw{background:#287d65}#soundToggle{background:#384257}
+#status{margin:20px auto;color:var(--accent);font-size:17px;font-weight:bold;min-height:28px}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;max-width:1000px;margin:auto}
+.feature{background:var(--panel);border:1px solid var(--border);padding:28px 18px;border-radius:12px}
+.feature h3{color:var(--accent);margin-bottom:12px}
+.feature p{color:var(--muted);line-height:1.6}
+footer{text-align:center;padding:30px;color:#81899a;border-top:1px solid #252a36;margin-top:45px}
+@media(max-width:700px){
+header{justify-content:center}
+nav a{margin:0 7px;font-size:14px}
+.game-layout{display:flex;flex-direction:column;align-items:center;gap:18px}
+.board-container{width:min(92vw,480px)}
+.history-panel{width:min(92vw,480px);max-height:240px}
+.game-info,.clocks{width:min(92vw,480px)}
+.controls{gap:8px}
+.controls button{padding:11px 10px;font-size:12px}
+.settings-panel,.online-panel{width:min(92vw,480px)}
 }
 </style>
 </head>
@@ -533,181 +99,181 @@ footer {
 <body>
 
 <header>
-  <div class="logo">♟ Chess With Wahaj</div>
-  <nav>
-    <a href="#home">Home</a>
-    <a href="#board">Board</a>
-    <a href="#features">Features</a>
-  </nav>
+<div class="logo">♟ Chess With Wahaj</div>
+<nav>
+<a href="#home">Home</a>
+<a href="#board">Board</a>
+<a href="#features">Features</a>
+</nav>
 </header>
 
 <section class="hero" id="home">
-  <h1>Think. Play. <span>Conquer.</span></h1>
-  <p>
-    Welcome to Chess With Wahaj.<br>
-    A platform for chess lovers, thinkers and future champions.
-  </p>
-  <a href="#board" class="btn">Play Chess</a>
+<h1>Think. Play. <span>Conquer.</span></h1>
+<p>Welcome to Chess With Wahaj.<br>A platform for chess lovers, thinkers and future champions.</p>
+<a href="#board" class="btn">Play Chess</a>
 </section>
 
 <section class="section" id="board">
-
 <h2>♟ Chess Arena</h2>
-
-<p style="color:#a5adbd;margin-bottom:20px">
-Choose your opponent, select your time control and play.
-</p>
-
-<!-- GAME SETTINGS -->
+<p style="color:#a5adbd;margin-bottom:20px">Choose your opponent, select your time control and play.</p>
 
 <div class="settings-panel">
-  <h3>⚙ Game Settings</h3>
+<h3>⚙ Game Settings</h3>
+<div class="settings-grid">
 
-  <div class="settings-grid">
-
-    <div class="setting-group">
-      <label>Opponent</label>
-      <select id="gameMode">
-        <option value="computer">🤖 Computer</option>
-        <option value="human">👥 Two Players</option>
-      </select>
-    </div>
-
-    <div class="setting-group">
-      <label>Time Category</label>
-      <select id="timeCategory">
-        <option value="bullet">Bullet</option>
-        <option value="blitz" selected>Blitz</option>
-        <option value="rapid">Rapid</option>
-      </select>
-    </div>
-
-    <div class="setting-group">
-      <label>Time Control</label>
-      <select id="timeControl"></select>
-    </div>
-
-    <div class="setting-group" id="colorSetting">
-      <label>Your Colour</label>
-      <select id="playerColor">
-        <option value="w">White ♔</option>
-        <option value="b">Black ♚</option>
-      </select>
-    </div>
-
-    <div class="setting-group" id="difficultySetting">
-      <label>Computer Strength</label>
-      <select id="difficulty">
-        <option value="easy">Easy</option>
-        <option value="medium" selected>Medium</option>
-        <option value="hard">Hard</option>
-      </select>
-    </div>
-
-  </div>
+<div class="setting-group">
+<label>Opponent</label>
+<select id="gameMode">
+<option value="computer">🤖 Computer</option>
+<option value="human">👥 Two Players</option>
+<option value="online">🌐 Online Multiplayer</option>
+</select>
 </div>
 
-<!-- CLOCKS -->
+<div class="setting-group">
+<label>Time Category</label>
+<select id="timeCategory">
+<option value="bullet">Bullet</option>
+<option value="blitz" selected>Blitz</option>
+<option value="rapid">Rapid</option>
+</select>
+</div>
+
+<div class="setting-group">
+<label>Time Control</label>
+<select id="timeControl"></select>
+</div>
+
+<div class="setting-group" id="colorSetting">
+<label>Your Colour</label>
+<select id="playerColor">
+<option value="w">White ♔</option>
+<option value="b">Black ♚</option>
+</select>
+</div>
+
+<div class="setting-group" id="difficultySetting">
+<label>Computer Strength</label>
+<select id="difficulty">
+<option value="easy">Easy</option>
+<option value="medium" selected>Medium</option>
+<option value="hard">Hard</option>
+</select>
+</div>
+
+</div>
+</div>
+
+<!-- ONLINE MULTIPLAYER -->
+<div class="online-panel" id="onlinePanel" style="display:none">
+<h3>🌐 Online Multiplayer</h3>
+<p>Create a private room and invite a friend. The creator plays White and the person joining plays Black.</p>
+
+<div class="online-actions">
+<button id="createRoom">➕ Create Room</button>
+</div>
+
+<p style="margin-top:15px">Or enter your friend's room code:</p>
+
+<div class="online-actions">
+<input id="roomCodeInput" placeholder="Enter room code" maxlength="6">
+<button id="joinRoom">Join Room</button>
+</div>
+
+<div id="roomDisplay" style="display:none"></div>
+<div id="onlineStatus">Create a room or join a friend.</div>
+<button id="copyRoom" style="display:none;margin-top:10px">📋 Copy Room Code</button>
+<button id="leaveRoom" style="display:none;margin-top:10px;background:#bd414b">Leave Room</button>
+</div>
 
 <div class="clocks">
-
-  <div class="clock active" id="whiteClock">
-    <div class="clock-name">♔ WHITE</div>
-    <div class="clock-time" id="whiteTime">05:00</div>
-  </div>
-
-  <div class="clock" id="blackClock">
-    <div class="clock-name">♚ BLACK</div>
-    <div class="clock-time" id="blackTime">05:00</div>
-  </div>
-
+<div class="clock active" id="whiteClock">
+<div class="clock-name">♔ WHITE</div>
+<div class="clock-time" id="whiteTime">05:00</div>
+</div>
+<div class="clock" id="blackClock">
+<div class="clock-name">♚ BLACK</div>
+<div class="clock-time" id="blackTime">05:00</div>
+</div>
 </div>
 
 <div class="game-info">
-  <span class="player-label active" id="whiteLabel">♔ White</span>
-  <span class="player-label" id="blackLabel">♚ Black</span>
+<span class="player-label active" id="whiteLabel">♔ White</span>
+<span class="player-label" id="blackLabel">♚ Black</span>
 </div>
 
 <div class="game-layout">
+<div class="board-container">
+<div class="board" id="boardGrid"></div>
+<div class="game-overlay" id="gameOverlay">
+<div class="result-card">
+<h2 id="resultTitle">CHECKMATE!</h2>
+<p id="resultMessage"></p>
+<button onclick="restartGame()">Play Again</button>
+</div>
+</div>
+</div>
 
-  <div class="board-container">
-
-    <div class="board" id="boardGrid"></div>
-
-    <div class="game-overlay" id="gameOverlay">
-      <div class="result-card">
-        <h2 id="resultTitle">CHECKMATE!</h2>
-        <p id="resultMessage"></p>
-        <button onclick="restartGame()">Play Again</button>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="history-panel">
-    <h3>📜 Move History</h3>
-    <div id="moveHistory">
-      <div class="empty-history">
-        No moves yet. Start playing!
-      </div>
-    </div>
-  </div>
-
+<div class="history-panel">
+<h3>📜 Move History</h3>
+<div id="moveHistory">
+<div class="empty-history">No moves yet. Start playing!</div>
+</div>
+</div>
 </div>
 
 <div class="controls">
-  <button id="undo">↶ Undo</button>
-  <button id="restart">↻ New Game</button>
-  <button id="draw">½ Draw</button>
-  <button id="resign">⚑ Resign</button>
-  <button id="soundToggle">🔊 Sound ON</button>
+<button id="undo">↶ Undo</button>
+<button id="restart">↻ New Game</button>
+<button id="draw">½ Draw</button>
+<button id="resign">⚑ Resign</button>
+<button id="soundToggle">🔊 Sound ON</button>
 </div>
 
 <p id="status">Preparing chess game...</p>
-
 </section>
 
 <section class="section" id="features">
-
 <h2>Explore The Platform</h2>
-
 <div class="features">
-
-  <div class="feature">
-    <h3>♟ Play Chess</h3>
-    <p>Experience the world of chess.</p>
-  </div>
-
-  <div class="feature">
-    <h3>🤖 Play Computer</h3>
-    <p>Challenge your thinking and improve.</p>
-  </div>
-
-  <div class="feature">
-    <h3>⏱ Chess Clock</h3>
-    <p>Bullet, Blitz and Rapid time controls.</p>
-  </div>
-
-  <div class="feature">
-    <h3>📚 Learn Chess</h3>
-    <p>Explore strategies, tactics and openings.</p>
-  </div>
-
+<div class="feature"><h3>♟ Play Chess</h3><p>Experience the world of chess.</p></div>
+<div class="feature"><h3>🤖 Play Computer</h3><p>Challenge your thinking and improve.</p></div>
+<div class="feature"><h3>🌐 Online Chess</h3><p>Play your friends from different devices.</p></div>
+<div class="feature"><h3>⏱ Chess Clock</h3><p>Bullet, Blitz and Rapid time controls.</p></div>
+<div class="feature"><h3>📚 Learn Chess</h3><p>Explore strategies, tactics and openings.</p></div>
 </div>
-
 </section>
 
-<footer>
-© 2026 Chess With Wahaj | All Rights Reserved
-</footer>
+<footer>© 2026 Chess With Wahaj | All Rights Reserved</footer>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<!-- Chess libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 
 <script>
 
 // ==========================================
-// CHESS WITH WAHAJ
-// CLOCK + HUMAN + STOCKFISH
+// FIREBASE CONFIGURATION
+// ==========================================
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCaI7obLOElKAmG3ibmUSEqHIWmLfF4wpY",
+  authDomain: "chess-with-wahaj.firebaseapp.com",
+  databaseURL: "https://chess-with-wahaj-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "chess-with-wahaj",
+  storageBucket: "chess-with-wahaj.firebasestorage.app",
+  messagingSenderId: "569614032196",
+  appId: "1:569614032196:web:b893dd705280fb79c08b11"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// ==========================================
+// GAME VARIABLES
 // ==========================================
 
 const game = new Chess();
@@ -724,10 +290,8 @@ const timeControlSelect = document.getElementById("timeControl");
 
 const whiteLabel = document.getElementById("whiteLabel");
 const blackLabel = document.getElementById("blackLabel");
-
 const whiteClock = document.getElementById("whiteClock");
 const blackClock = document.getElementById("blackClock");
-
 const whiteTimeDisplay = document.getElementById("whiteTime");
 const blackTimeDisplay = document.getElementById("blackTime");
 
@@ -765,1334 +329,1108 @@ let lastClockUpdate = null;
 let clockRunning = false;
 let activeClock = "w";
 
+// ONLINE VARIABLES
+
+let roomRef = null;
+let roomListener = null;
+let currentRoomCode = null;
+let onlineReady = false;
+let remoteApplying = false;
+let playerId = "player_" + Math.random().toString(36).slice(2,12);
+
+// ==========================================
 // TIME PRESETS
+// ==========================================
 
 const timePresets = {
-
-  bullet: [
-    {name:"1 + 0 (1 Minute)",time:60,increment:0},
-    {name:"1 + 1 (1 Minute + 1 sec)",time:60,increment:1},
-    {name:"2 + 1 (2 Minutes + 1 sec)",time:120,increment:1}
-  ],
-
-  blitz: [
-    {name:"3 + 0 (3 Minutes)",time:180,increment:0},
-    {name:"3 + 2 (3 Minutes + 2 sec)",time:180,increment:2},
-    {name:"5 + 0 (5 Minutes)",time:300,increment:0},
-    {name:"5 + 3 (5 Minutes + 3 sec)",time:300,increment:3}
-  ],
-
-  rapid: [
-    {name:"10 + 0 (10 Minutes)",time:600,increment:0},
-    {name:"10 + 5 (10 Minutes + 5 sec)",time:600,increment:5},
-    {name:"15 + 10 (15 Minutes + 10 sec)",time:900,increment:10},
-    {name:"30 + 0 (30 Minutes)",time:1800,increment:0}
-  ]
-
+bullet:[
+{name:"1 + 0 (1 Minute)",time:60,increment:0},
+{name:"1 + 1 (1 Minute + 1 sec)",time:60,increment:1},
+{name:"2 + 1 (2 Minutes + 1 sec)",time:120,increment:1}
+],
+blitz:[
+{name:"3 + 0 (3 Minutes)",time:180,increment:0},
+{name:"3 + 2 (3 Minutes + 2 sec)",time:180,increment:2},
+{name:"5 + 0 (5 Minutes)",time:300,increment:0},
+{name:"5 + 3 (5 Minutes + 3 sec)",time:300,increment:3}
+],
+rapid:[
+{name:"10 + 0 (10 Minutes)",time:600,increment:0},
+{name:"10 + 5 (10 Minutes + 5 sec)",time:600,increment:5},
+{name:"15 + 10 (15 Minutes + 10 sec)",time:900,increment:10},
+{name:"30 + 0 (30 Minutes)",time:1800,increment:0}
+]
 };
 
-const symbols = {
-  wp:"♙", wn:"♘", wb:"♗", wr:"♖",
-  wq:"♕", wk:"♔",
-  bp:"♟", bn:"♞", bb:"♝",
-  br:"♜", bq:"♛", bk:"♚"
+const symbols={
+wp:"♙",wn:"♘",wb:"♗",wr:"♖",wq:"♕",wk:"♔",
+bp:"♟",bn:"♞",bb:"♝",br:"♜",bq:"♛",bk:"♚"
 };
 
-const difficultySettings = {
-  easy: {skill:0,time:400},
-  medium: {skill:8,time:900},
-  hard: {skill:20,time:1800}
+const difficultySettings={
+easy:{skill:0,time:400},
+medium:{skill:8,time:900},
+hard:{skill:20,time:1800}
 };
 
 // ==========================================
-// SOUND EFFECTS
+// SOUND
 // ==========================================
 
-function playSound(type) {
+function playSound(type){
+if(!soundEnabled)return;
+try{
+const AC=window.AudioContext||window.webkitAudioContext;
+if(!AC)return;
+if(!audioContext)audioContext=new AC();
+if(audioContext.state==="suspended")audioContext.resume();
 
-  if (!soundEnabled) return;
+const sounds={
+move:[520,.09],capture:[260,.15],check:[740,.22],
+mate:[880,.4],end:[330,.25],start:[600,.12]
+};
 
-  try {
+const settings=sounds[type]||sounds.move;
+const oscillator=audioContext.createOscillator();
+const gain=audioContext.createGain();
 
-    const AudioContextClass =
-      window.AudioContext || window.webkitAudioContext;
+oscillator.type=type==="mate"?"triangle":"sine";
+oscillator.frequency.setValueAtTime(settings[0],audioContext.currentTime);
+gain.gain.setValueAtTime(.16,audioContext.currentTime);
+gain.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+settings[1]);
 
-    if (!AudioContextClass) return;
-
-    if (!audioContext) {
-      audioContext = new AudioContextClass();
-    }
-
-    if (audioContext.state === "suspended") {
-      audioContext.resume();
-    }
-
-    const sounds = {
-      move:[520,0.09],
-      capture:[260,0.15],
-      check:[740,0.22],
-      mate:[880,0.4],
-      end:[330,0.25],
-      start:[600,0.12]
-    };
-
-    const settings = sounds[type] || sounds.move;
-
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-
-    oscillator.type = type === "mate" ? "triangle" : "sine";
-
-    oscillator.frequency.setValueAtTime(
-      settings[0],
-      audioContext.currentTime
-    );
-
-    if (type === "mate") {
-      oscillator.frequency.exponentialRampToValueAtTime(
-        440,
-        audioContext.currentTime + settings[1]
-      );
-    }
-
-    gain.gain.setValueAtTime(0.16,audioContext.currentTime);
-
-    gain.gain.exponentialRampToValueAtTime(
-      0.001,
-      audioContext.currentTime + settings[1]
-    );
-
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + settings[1]);
-
-  } catch(error) {
-    console.log("Audio unavailable");
-  }
-
+oscillator.connect(gain);
+gain.connect(audioContext.destination);
+oscillator.start();
+oscillator.stop(audioContext.currentTime+settings[1]);
+}catch(e){}
 }
 
-document.getElementById("soundToggle").addEventListener(
-  "click",
-  function() {
-
-    soundEnabled = !soundEnabled;
-
-    this.textContent = soundEnabled
-      ? "🔊 Sound ON"
-      : "🔇 Sound OFF";
-
-    if (soundEnabled) playSound("move");
-
-  }
-);
+document.getElementById("soundToggle").addEventListener("click",function(){
+soundEnabled=!soundEnabled;
+this.textContent=soundEnabled?"🔊 Sound ON":"🔇 Sound OFF";
+if(soundEnabled)playSound("move");
+});
 
 // ==========================================
 // TIME CONTROL SETTINGS
 // ==========================================
 
-function updateTimePresets() {
+function updateTimePresets(){
+const presets=timePresets[categorySelect.value];
+timeControlSelect.innerHTML="";
 
-  const category = categorySelect.value;
+presets.forEach((preset,index)=>{
+const option=document.createElement("option");
+option.value=index;
+option.textContent=preset.name;
+timeControlSelect.appendChild(option);
+});
 
-  const presets = timePresets[category];
-
-  timeControlSelect.innerHTML = "";
-
-  presets.forEach((preset,index) => {
-
-    const option = document.createElement("option");
-
-    option.value = index;
-    option.textContent = preset.name;
-
-    timeControlSelect.appendChild(option);
-
-  });
-
-  if (category === "bullet") {
-    timeControlSelect.value = "0";
-  }
-
-  if (category === "blitz") {
-    timeControlSelect.value = "2";
-  }
-
-  if (category === "rapid") {
-    timeControlSelect.value = "0";
-  }
-
+timeControlSelect.value=categorySelect.value==="blitz"?"2":"0";
 }
 
-function getSelectedTimeControl() {
-
-  const presets = timePresets[categorySelect.value];
-
-  return presets[Number(timeControlSelect.value)] || presets[0];
-
+function getSelectedTimeControl(){
+const presets=timePresets[categorySelect.value];
+return presets[Number(timeControlSelect.value)]||presets[0];
 }
 
 // ==========================================
 // CLOCK FUNCTIONS
 // ==========================================
 
-function formatTime(milliseconds) {
-
-  const totalSeconds = Math.max(
-    0,
-    Math.ceil(milliseconds / 1000)
-  );
-
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return (
-    String(minutes).padStart(2,"0") +
-    ":" +
-    String(seconds).padStart(2,"0")
-  );
-
+function formatTime(ms){
+const seconds=Math.max(0,Math.ceil(ms/1000));
+return String(Math.floor(seconds/60)).padStart(2,"0")+":"+String(seconds%60).padStart(2,"0");
 }
 
-function renderClocks() {
+function renderClocks(){
+whiteTimeDisplay.textContent=formatTime(whiteRemaining);
+blackTimeDisplay.textContent=formatTime(blackRemaining);
 
-  whiteTimeDisplay.textContent = formatTime(whiteRemaining);
-  blackTimeDisplay.textContent = formatTime(blackRemaining);
+whiteClock.classList.toggle("active",clockRunning&&activeClock==="w"&&!gameResult);
+blackClock.classList.toggle("active",clockRunning&&activeClock==="b"&&!gameResult);
 
-  whiteClock.classList.toggle(
-    "active",
-    clockRunning && activeClock === "w" && !gameResult
-  );
-
-  blackClock.classList.toggle(
-    "active",
-    clockRunning && activeClock === "b" && !gameResult
-  );
-
-  whiteClock.classList.toggle(
-    "low-time",
-    whiteRemaining <= 10000
-  );
-
-  blackClock.classList.toggle(
-    "low-time",
-    blackRemaining <= 10000
-  );
-
+whiteClock.classList.toggle("low-time",whiteRemaining<=10000);
+blackClock.classList.toggle("low-time",blackRemaining<=10000);
 }
 
-function stopClock() {
-
-  if (clockInterval !== null) {
-    clearInterval(clockInterval);
-    clockInterval = null;
-  }
-
-  clockRunning = false;
-  lastClockUpdate = null;
-
-  renderClocks();
-
+function stopClock(){
+if(clockInterval!==null){
+clearInterval(clockInterval);
+clockInterval=null;
+}
+clockRunning=false;
+lastClockUpdate=null;
+renderClocks();
 }
 
-function startClock() {
+function startClock(){
+if(gameResult||game.game_over())return;
+if(gameMode==="online"&&!onlineReady)return;
 
-  if (gameResult || game.game_over()) return;
+if(clockInterval!==null)clearInterval(clockInterval);
 
-  if (clockInterval !== null) {
-    clearInterval(clockInterval);
-  }
-
-  clockRunning = true;
-  activeClock = game.turn();
-
-  lastClockUpdate = Date.now();
-
-  clockInterval = setInterval(updateClock,50);
-
-  renderClocks();
-
+clockRunning=true;
+activeClock=game.turn();
+lastClockUpdate=Date.now();
+clockInterval=setInterval(updateClock,50);
+renderClocks();
 }
 
-function updateClock() {
+function updateClock(){
+if(!clockRunning||gameResult)return;
 
-  if (!clockRunning || gameResult) return;
+const now=Date.now();
+const elapsed=now-lastClockUpdate;
+lastClockUpdate=now;
 
-  const now = Date.now();
-
-  const elapsed = now - lastClockUpdate;
-
-  lastClockUpdate = now;
-
-  if (activeClock === "w") {
-
-    whiteRemaining -= elapsed;
-
-    if (whiteRemaining <= 0) {
-
-      whiteRemaining = 0;
-
-      renderClocks();
-
-      finishOnTime("w");
-
-      return;
-    }
-
-  } else {
-
-    blackRemaining -= elapsed;
-
-    if (blackRemaining <= 0) {
-
-      blackRemaining = 0;
-
-      renderClocks();
-
-      finishOnTime("b");
-
-      return;
-    }
-
-  }
-
-  renderClocks();
-
+if(activeClock==="w"){
+whiteRemaining-=elapsed;
+if(whiteRemaining<=0){
+whiteRemaining=0;
+renderClocks();
+finishOnTime("w");
+return;
+}
+}else{
+blackRemaining-=elapsed;
+if(blackRemaining<=0){
+blackRemaining=0;
+renderClocks();
+finishOnTime("b");
+return;
+}
 }
 
-function finishOnTime(loser) {
-
-  stopClock();
-
-  const winner = loser === "w" ? "Black" : "White";
-
-  let message;
-
-  if (gameMode === "computer") {
-
-    const playerWon =
-      winner === (playerColor === "w" ? "White" : "Black");
-
-    message = playerWon
-      ? "Congratulations! You won on time."
-      : "Your time has expired. The computer wins.";
-
-  } else {
-
-    message = winner + " wins on time!";
-
-  }
-
-  finishGame(
-    "⏱ TIME OUT!",
-    message,
-    "timeout"
-  );
-
+renderClocks();
 }
 
-function switchClock(mover) {
+function finishOnTime(loser){
+stopClock();
+const winner=loser==="w"?"Black":"White";
 
-  if (gameResult) return;
+let message;
 
-  if (mover === "w") {
-    whiteRemaining += increment * 1000;
-  } else {
-    blackRemaining += increment * 1000;
-  }
-
-  activeClock = game.turn();
-
-  lastClockUpdate = Date.now();
-
-  clockRunning = true;
-
-  renderClocks();
-
+if(gameMode==="computer"){
+const won=winner===(playerColor==="w"?"White":"Black");
+message=won?"Congratulations! You won on time.":"Your time has expired. The computer wins.";
+}else{
+message=winner+" wins on time!";
 }
 
-function resetClock() {
-
-  stopClock();
-
-  const selectedControl = getSelectedTimeControl();
-
-  initialTime = selectedControl.time;
-  increment = selectedControl.increment;
-
-  whiteRemaining = initialTime * 1000;
-  blackRemaining = initialTime * 1000;
-
-  activeClock = "w";
-
-  renderClocks();
-
+finishGame("⏱ TIME OUT!",message,"timeout");
 }
+
+function switchClock(mover){
+if(gameResult)return;
+
+if(mover==="w")whiteRemaining+=increment*1000;
+else blackRemaining+=increment*1000;
+
+activeClock=game.turn();
+lastClockUpdate=Date.now();
+clockRunning=true;
+renderClocks();
+}
+
+function resetClock(){
+stopClock();
+const control=getSelectedTimeControl();
+initialTime=control.time;
+increment=control.increment;
+whiteRemaining=initialTime*1000;
+blackRemaining=initialTime*1000;
+activeClock="w";
+renderClocks();
+}
+
+// ==========================================
+// ONLINE MULTIPLAYER
+// ==========================================
+
+function showOnlineStatus(message){
+document.getElementById("onlineStatus").textContent=message;
+}
+
+function generateRoomCode(){
+return Math.random().toString(36).substring(2,8).toUpperCase();
+}
+
+function detachRoomListener(){
+if(roomRef&&roomListener){
+roomRef.off("value",roomListener);
+}
+roomListener=null;
+roomRef=null;
+}
+
+function leaveOnlineRoom(){
+detachRoomListener();
+currentRoomCode=null;
+onlineReady=false;
+
+document.getElementById("roomDisplay").style.display="none";
+document.getElementById("copyRoom").style.display="none";
+document.getElementById("leaveRoom").style.display="none";
+
+stopClock();
+}
+
+function createRoom(){
+if(gameMode!=="online")return;
+
+leaveOnlineRoom();
+
+const code=generateRoomCode();
+const selectedControl=getSelectedTimeControl();
+
+playerColor="w";
+computerColor="b";
+
+game.reset();
+gameResult=null;
+selected=null;
+hideResult();
+
+resetClock();
+
+roomRef=database.ref("rooms/"+code);
+currentRoomCode=code;
+
+const roomData={
+fen:game.fen(),
+moves:[],
+players:{
+white:playerId,
+black:null
+},
+status:"waiting",
+turn:"w",
+whiteRemaining:whiteRemaining,
+blackRemaining:blackRemaining,
+increment:increment,
+createdAt:Date.now(),
+timeControl:selectedControl.name
+};
+
+roomRef.set(roomData).then(()=>{
+onlineReady=false;
+
+document.getElementById("roomDisplay").style.display="block";
+document.getElementById("roomDisplay").textContent="ROOM: "+code;
+document.getElementById("copyRoom").style.display="inline-block";
+document.getElementById("leaveRoom").style.display="inline-block";
+
+showOnlineStatus("Room created! Share the code with your friend. Waiting for opponent...");
+
+listenToRoom();
+renderBoard();
+
+}).catch(error=>{
+showOnlineStatus("Could not create room: "+error.message);
+});
+}
+
+function joinRoom(){
+if(gameMode!=="online")return;
+
+const code=document.getElementById("roomCodeInput").value.trim().toUpperCase();
+
+if(code.length!==6){
+showOnlineStatus("Please enter a valid 6-character room code.");
+return;
+}
+
+leaveOnlineRoom();
+
+const ref=database.ref("rooms/"+code);
+
+showOnlineStatus("Searching for room...");
+
+ref.once("value").then(snapshot=>{
+if(!snapshot.exists()){
+showOnlineStatus("Room not found. Check the code.");
+return;
+}
+
+const data=snapshot.val();
+
+if(data.status!=="waiting"||data.players.black){
+showOnlineStatus("This room is already occupied or finished.");
+return;
+}
+
+if(data.players.white===playerId){
+showOnlineStatus("You cannot join your own room.");
+return;
+}
+
+return ref.update({
+"players/black":playerId,
+status:"playing"
+}).then(()=>{
+roomRef=ref;
+currentRoomCode=code;
+playerColor="b";
+computerColor="w";
+onlineReady=true;
+
+document.getElementById("roomDisplay").style.display="block";
+document.getElementById("roomDisplay").textContent="ROOM: "+code;
+document.getElementById("copyRoom").style.display="inline-block";
+document.getElementById("leaveRoom").style.display="inline-block";
+
+showOnlineStatus("Joined successfully! You are Black. Game starting...");
+listenToRoom();
+});
+
+}).catch(error=>{
+showOnlineStatus("Unable to join: "+error.message);
+});
+}
+
+function listenToRoom(){
+if(!roomRef)return;
+
+roomListener=roomRef.on("value",snapshot=>{
+if(!snapshot.exists()){
+showOnlineStatus("Room no longer exists.");
+onlineReady=false;
+stopClock();
+return;
+}
+
+const data=snapshot.val();
+
+if(data.status==="waiting"){
+onlineReady=false;
+stopClock();
+showOnlineStatus("Waiting for your opponent to join...");
+renderBoard();
+return;
+}
+
+if(data.status==="playing"){
+onlineReady=true;
+showOnlineStatus("Connected! You are "+(playerColor==="w"?"White":"Black")+".");
+}
+
+if(data.status==="finished"){
+onlineReady=true;
+
+if(data.result&&!gameResult){
+remoteApplying=true;
+finishGame(data.result.title,data.result.message,data.result.type);
+remoteApplying=false;
+}
+return;
+}
+
+if(data.status==="playing"&&data.fen!==game.fen()){
+remoteApplying=true;
+
+game.reset();
+
+if(Array.isArray(data.moves)){
+data.moves.forEach(move=>{
+game.move(move);
+});
+}
+
+if(data.fen&&game.fen()!==data.fen){
+game.load(data.fen);
+}
+
+whiteRemaining=Number(data.whiteRemaining??whiteRemaining);
+blackRemaining=Number(data.blackRemaining??blackRemaining);
+
+selected=null;
+
+stopClock();
+renderBoard();
+
+if(!gameResult)startClock();
+
+remoteApplying=false;
+
+playSound("move");
+}else if(data.status==="playing"){
+whiteRemaining=Number(data.whiteRemaining??whiteRemaining);
+blackRemaining=Number(data.blackRemaining??blackRemaining);
+renderClocks();
+
+if(!clockRunning&&!gameResult)startClock();
+}
+
+});
+}
+
+function syncOnlineState(){
+if(gameMode!=="online"||!roomRef||!onlineReady||remoteApplying)return;
+
+roomRef.update({
+fen:game.fen(),
+moves:game.history(),
+turn:game.turn(),
+whiteRemaining:whiteRemaining,
+blackRemaining:blackRemaining,
+status:gameResult?"finished":"playing"
+}).catch(error=>{
+showOnlineStatus("Synchronization error: "+error.message);
+});
+}
+
+function finishOnlineRoom(title,message,type){
+if(!roomRef||remoteApplying)return;
+
+roomRef.update({
+status:"finished",
+result:{title:title,message:message,type:type}
+});
+}
+
+document.getElementById("createRoom").addEventListener("click",createRoom);
+document.getElementById("joinRoom").addEventListener("click",joinRoom);
+
+document.getElementById("copyRoom").addEventListener("click",()=>{
+if(!currentRoomCode)return;
+
+if(navigator.clipboard&&navigator.clipboard.writeText){
+navigator.clipboard.writeText(currentRoomCode).then(()=>{
+showOnlineStatus("Room code copied! Share it with your friend.");
+}).catch(()=>{
+showOnlineStatus("Your room code is: "+currentRoomCode);
+});
+}else{
+showOnlineStatus("Your room code is: "+currentRoomCode);
+}
+});
+
+document.getElementById("leaveRoom").addEventListener("click",()=>{
+leaveOnlineRoom();
+gameMode="online";
+modeSelect.value="online";
+game.reset();
+gameResult=null;
+resetClock();
+renderBoard();
+showOnlineStatus("You left the room. Create or join another room.");
+});
 
 // ==========================================
 // GAME ENDING
 // ==========================================
 
-function finishGame(title,message,result) {
+function finishGame(title,message,result){
+if(gameResult)return;
 
-  if (gameResult) return;
+gameResult=result;
+stopClock();
+stopEngineSearch();
+selected=null;
 
-  gameResult = result;
+document.getElementById("resultTitle").textContent=title;
+document.getElementById("resultMessage").textContent=message;
+document.getElementById("gameOverlay").classList.add("show");
 
-  stopClock();
-  stopEngineSearch();
-
-  selected = null;
-
-  document.getElementById("resultTitle").textContent = title;
-  document.getElementById("resultMessage").textContent = message;
-
-  document.getElementById("gameOverlay").classList.add("show");
-
-  playSound("end");
-
-  renderBoard();
-
+if(gameMode==="online"&&!remoteApplying){
+finishOnlineRoom(title,message,result);
 }
 
-function hideResult() {
+playSound("end");
+renderBoard();
+}
 
-  document.getElementById("gameOverlay").classList.remove("show");
-
+function hideResult(){
+document.getElementById("gameOverlay").classList.remove("show");
 }
 
 // ==========================================
-// CHECKMATE AND DRAW DETECTION
+// RESULT DETECTION
 // ==========================================
 
-function checkGameResult() {
+function checkGameResult(){
+if(game.in_checkmate()){
+const winner=game.turn()==="w"?"Black":"White";
 
-  if (game.in_checkmate()) {
+let message;
 
-    const winner =
-      game.turn() === "w" ? "Black" : "White";
+if(gameMode==="computer"){
+const won=winner===(playerColor==="w"?"White":"Black");
+message=won?"Congratulations! You defeated the computer.":"The computer wins this game. Try again!";
+}else{
+message=winner+" wins by checkmate!";
+}
 
-    let message;
+finishGame("♛ CHECKMATE!",message,"win");
+playSound("mate");
+return true;
+}
 
-    if (gameMode === "computer") {
+if(game.in_stalemate()||game.in_draw()){
+finishGame("DRAW!","The game ended in a draw.","draw");
+return true;
+}
 
-      const playerWon =
-        winner === (playerColor === "w" ? "White" : "Black");
+if(game.in_check())playSound("check");
 
-      message = playerWon
-        ? "Congratulations! You defeated the computer."
-        : "The computer wins this game. Try again!";
-
-    } else {
-
-      message = winner + " wins by checkmate!";
-
-    }
-
-    finishGame(
-      "♛ CHECKMATE!",
-      message,
-      "win"
-    );
-
-    playSound("mate");
-
-    return true;
-  }
-
-  if (game.in_stalemate()) {
-
-    finishGame(
-      "DRAW!",
-      "The game ended in stalemate.",
-      "draw"
-    );
-
-    return true;
-  }
-
-  if (game.in_draw()) {
-
-    finishGame(
-      "DRAW!",
-      "The game ended in a draw.",
-      "draw"
-    );
-
-    return true;
-  }
-
-  if (game.in_check()) {
-    playSound("check");
-  }
-
-  return false;
-
+return false;
 }
 
 // ==========================================
 // MOVE HISTORY
 // ==========================================
 
-function renderMoveHistory() {
+function renderMoveHistory(){
+const moves=game.history();
+historyContainer.innerHTML="";
 
-  const moves = game.history();
+if(moves.length===0){
+historyContainer.innerHTML='<div class="empty-history">No moves yet. Start playing!</div>';
+return;
+}
 
-  historyContainer.innerHTML = "";
+const table=document.createElement("table");
+table.className="history-table";
 
-  if (moves.length === 0) {
+table.innerHTML=`
+<thead><tr><th>#</th><th>White</th><th>Black</th></tr></thead>
+<tbody></tbody>`;
 
-    historyContainer.innerHTML =
-      '<div class="empty-history">No moves yet. Start playing!</div>';
+const tbody=table.querySelector("tbody");
 
-    return;
-  }
+for(let i=0;i<moves.length;i+=2){
+const row=document.createElement("tr");
 
-  const table = document.createElement("table");
+const number=document.createElement("td");
+number.className="move-number";
+number.textContent=Math.floor(i/2)+1;
 
-  table.className = "history-table";
+const white=document.createElement("td");
+white.className="white-move";
+white.textContent=moves[i]||"";
 
-  table.innerHTML = `
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>White</th>
-        <th>Black</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  `;
+const black=document.createElement("td");
+black.className="black-move";
+black.textContent=moves[i+1]||"";
 
-  const tbody = table.querySelector("tbody");
+row.append(number,white,black);
+tbody.appendChild(row);
+}
 
-  for (let i = 0; i < moves.length; i += 2) {
-
-    const row = document.createElement("tr");
-
-    const number = document.createElement("td");
-    number.className = "move-number";
-    number.textContent = Math.floor(i / 2) + 1;
-
-    const white = document.createElement("td");
-    white.className = "white-move";
-    white.textContent = moves[i] || "";
-
-    const black = document.createElement("td");
-    black.className = "black-move";
-    black.textContent = moves[i + 1] || "";
-
-    row.append(number,white,black);
-
-    tbody.appendChild(row);
-
-  }
-
-  historyContainer.appendChild(table);
-
-  historyContainer.scrollTop = historyContainer.scrollHeight;
-
+historyContainer.appendChild(table);
+historyContainer.scrollTop=historyContainer.scrollHeight;
 }
 
 // ==========================================
-// STOCKFISH INITIALIZATION
+// STOCKFISH
 // ==========================================
 
-function initializeEngine() {
+function initializeEngine(){
+if(engine||engineLoading||engineError)return;
 
-  if (engine || engineLoading || engineError) return;
+engineLoading=true;
+updateStatus();
 
-  engineLoading = true;
+try{
+engine=new Worker("./engine/stockfish-19-lite-single.js");
 
-  updateStatus();
+engine.onmessage=function(event){
+const message=String(event.data).trim();
 
-  try {
+if(message==="uciok"){
+engine.postMessage("isready");
+return;
+}
 
-    engine = new Worker(
-      "./engine/stockfish-19-lite-single.js"
-    );
+if(message==="readyok"){
+engineReady=true;
+engineLoading=false;
 
-    engine.onmessage = function(event) {
+if(pendingSearch)startEngineMove();
+else updateStatus();
 
-      const message = String(event.data).trim();
+return;
+}
 
-      if (message === "uciok") {
+if(message.startsWith("bestmove")){
+engineBusy=false;
 
-        engine.postMessage("isready");
+if(discardCurrentMove){
+discardCurrentMove=false;
+if(pendingSearch)startEngineMove();
+else updateStatus();
+return;
+}
 
-        return;
-      }
+if(gameResult||game.game_over()||gameMode!=="computer"||game.turn()!==computerColor){
+renderBoard();
+return;
+}
 
-      if (message === "readyok") {
+const match=message.match(/^bestmove\s+([a-h][1-8][a-h][1-8][qrbn]?)/);
+if(!match)return;
 
-        engineReady = true;
-        engineLoading = false;
+const uci=match[1];
+const mover=game.turn();
 
-        if (pendingSearch) {
-          startEngineMove();
-        } else {
-          updateStatus();
-        }
+const moveData={
+from:uci.substring(0,2),
+to:uci.substring(2,4)
+};
 
-        return;
-      }
+if(uci.length===5)moveData.promotion=uci[4];
 
-      if (message.startsWith("bestmove")) {
+const played=game.move(moveData);
+selected=null;
 
-        engineBusy = false;
+if(played){
+playSound(played.captured?"capture":"move");
+switchClock(mover);
+renderBoard();
+checkGameResult();
+}else{
+status.textContent="Computer move failed.";
+}
+}
+};
 
-        if (discardCurrentMove) {
+engine.onerror=function(){
+engineError=true;
+engineLoading=false;
+engineReady=false;
+engineBusy=false;
+updateStatus();
+};
 
-          discardCurrentMove = false;
+engine.postMessage("uci");
 
-          if (pendingSearch) {
-            startEngineMove();
-          } else {
-            updateStatus();
-          }
-
-          return;
-        }
-
-        if (
-          gameResult ||
-          game.game_over() ||
-          gameMode !== "computer" ||
-          game.turn() !== computerColor
-        ) {
-
-          renderBoard();
-
-          return;
-        }
-
-        const match = message.match(
-          /^bestmove\s+([a-h][1-8][a-h][1-8][qrbn]?)/
-        );
-
-        if (!match) {
-
-          renderBoard();
-
-          return;
-        }
-
-        const uciMove = match[1];
-
-        const mover = game.turn();
-
-        const moveData = {
-          from: uciMove.substring(0,2),
-          to: uciMove.substring(2,4)
-        };
-
-        if (uciMove.length === 5) {
-          moveData.promotion = uciMove[4];
-        }
-
-        const played = game.move(moveData);
-
-        selected = null;
-
-        if (played) {
-
-          playSound(played.captured ? "capture" : "move");
-
-          switchClock(mover);
-
-          renderBoard();
-
-          checkGameResult();
-
-        } else {
-
-          status.textContent = "Computer move failed.";
-
-        }
-
-      }
-
-    };
-
-    engine.onerror = function() {
-
-      engineError = true;
-      engineLoading = false;
-      engineReady = false;
-      engineBusy = false;
-
-      updateStatus();
-
-    };
-
-    engine.postMessage("uci");
-
-  } catch(error) {
-
-    engineError = true;
-    engineLoading = false;
-
-    updateStatus();
-
-  }
-
+}catch(error){
+engineError=true;
+engineLoading=false;
+updateStatus();
+}
 }
 
 // ==========================================
 // STATUS
 // ==========================================
 
-function updateStatus() {
+function updateStatus(){
+if(gameResult){
+status.textContent="Game finished.";
+}else if(gameMode==="online"&&!currentRoomCode){
+status.textContent="Create or join an online room to begin.";
+}else if(gameMode==="online"&&!onlineReady){
+status.textContent="Waiting for opponent...";
+}else if(engineError&&gameMode==="computer"){
+status.textContent="Stockfish error. Check your engine files.";
+}else if(engineLoading&&gameMode==="computer"){
+status.textContent="Loading Stockfish 19...";
+}else if(engineBusy||pendingSearch){
+status.textContent="🤖 Computer is thinking...";
+}else{
+const name=game.turn()==="w"?"White":"Black";
 
-  if (gameResult) {
+if(gameMode==="human"){
+status.textContent=name+"'s turn"+(game.in_check()?" ⚠ CHECK!":"");
+}else if(gameMode==="online"){
+status.textContent=name+(game.turn()===playerColor?" — Your turn":" — Opponent's turn")+(game.in_check()?" ⚠ CHECK!":"");
+}else{
+const playerTurn=game.turn()===playerColor;
+status.textContent=name+(playerTurn?" — Your turn":" — Computer's turn")+(game.in_check()?" ⚠ CHECK!":"");
+}
+}
 
-    status.textContent = "Game finished.";
-
-  }
-
-  else if (engineError && gameMode === "computer") {
-
-    status.textContent = "Stockfish error. Check your engine files.";
-
-  }
-
-  else if (engineLoading && gameMode === "computer") {
-
-    status.textContent = "Loading Stockfish 19...";
-
-  }
-
-  else if (engineBusy || pendingSearch) {
-
-    status.textContent = "🤖 Computer is thinking...";
-
-  }
-
-  else {
-
-    const name = game.turn() === "w" ? "White" : "Black";
-
-    if (gameMode === "human") {
-
-      status.textContent =
-        name + "'s turn" +
-        (game.in_check() ? " ⚠ CHECK!" : "");
-
-    } else {
-
-      const playerTurn = game.turn() === playerColor;
-
-      status.textContent =
-        name +
-        (playerTurn ? " — Your turn" : " — Computer's turn") +
-        (game.in_check() ? " ⚠ CHECK!" : "");
-
-    }
-
-  }
-
-  whiteLabel.classList.toggle(
-    "active",
-    !gameResult && game.turn() === "w"
-  );
-
-  blackLabel.classList.toggle(
-    "active",
-    !gameResult && game.turn() === "b"
-  );
-
+whiteLabel.classList.toggle("active",!gameResult&&game.turn()==="w");
+blackLabel.classList.toggle("active",!gameResult&&game.turn()==="b");
 }
 
 // ==========================================
 // BOARD DISPLAY
 // ==========================================
 
-function renderBoard() {
+function renderBoard(){
+board.innerHTML="";
 
-  board.innerHTML = "";
+const position=game.board();
+const files="abcdefgh";
 
-  const position = game.board();
+const orientation=gameMode==="computer"||gameMode==="online"?playerColor:"w";
 
-  const files = "abcdefgh";
+const rows=orientation==="w"?[0,1,2,3,4,5,6,7]:[7,6,5,4,3,2,1,0];
+const cols=orientation==="w"?[0,1,2,3,4,5,6,7]:[7,6,5,4,3,2,1,0];
 
-  const orientation =
-    gameMode === "computer" ? playerColor : "w";
+let checkedKing=null;
 
-  const rows = orientation === "w"
-    ? [0,1,2,3,4,5,6,7]
-    : [7,6,5,4,3,2,1,0];
+if(game.in_check()){
+const kingColor=game.turn();
 
-  const cols = orientation === "w"
-    ? [0,1,2,3,4,5,6,7]
-    : [7,6,5,4,3,2,1,0];
+position.forEach((row,r)=>{
+row.forEach((piece,c)=>{
+if(piece&&piece.type==="k"&&piece.color===kingColor){
+checkedKing=files[c]+(8-r);
+}
+});
+});
+}
 
-  let checkedKing = null;
+rows.forEach(r=>{
+cols.forEach(c=>{
+const name=files[c]+(8-r);
+const piece=position[r][c];
 
-  if (game.in_check()) {
+const square=document.createElement("div");
+square.className="square "+((r+c)%2===0?"light":"dark");
 
-    const kingColor = game.turn();
+if(selected===name)square.classList.add("selected");
+if(name===checkedKing)square.classList.add("in-check");
 
-    position.forEach((row,r) => {
+if(selected){
+const moves=game.moves({square:selected,verbose:true});
+const possible=moves.find(m=>m.to===name);
 
-      row.forEach((piece,c) => {
+if(possible){
+square.classList.add(possible.captured?"capture":"legal");
+}
+}
 
-        if (
-          piece &&
-          piece.type === "k" &&
-          piece.color === kingColor
-        ) {
+if(piece){
+square.textContent=symbols[piece.color+piece.type];
+square.classList.add(piece.color==="w"?"white-piece":"black-piece");
+}
 
-          checkedKing = files[c] + (8-r);
+square.addEventListener("click",()=>handleClick(name));
+board.appendChild(square);
+});
+});
 
-        }
-
-      });
-
-    });
-
-  }
-
-  rows.forEach(r => {
-
-    cols.forEach(c => {
-
-      const name = files[c] + (8-r);
-
-      const piece = position[r][c];
-
-      const square = document.createElement("div");
-
-      square.className =
-        "square " +
-        ((r+c)%2 === 0 ? "light" : "dark");
-
-      if (selected === name) {
-        square.classList.add("selected");
-      }
-
-      if (name === checkedKing) {
-        square.classList.add("in-check");
-      }
-
-      if (selected) {
-
-        const moves = game.moves({
-          square:selected,
-          verbose:true
-        });
-
-        const possible = moves.find(m => m.to === name);
-
-        if (possible) {
-
-          if (possible.captured) {
-            square.classList.add("capture");
-          } else {
-            square.classList.add("legal");
-          }
-
-        }
-
-      }
-
-      if (piece) {
-
-        square.textContent =
-          symbols[piece.color + piece.type];
-
-        square.classList.add(
-          piece.color === "w"
-            ? "white-piece"
-            : "black-piece"
-        );
-
-      }
-
-      square.addEventListener(
-        "click",
-        () => handleClick(name)
-      );
-
-      board.appendChild(square);
-
-    });
-
-  });
-
-  renderMoveHistory();
-
-  updateStatus();
-
-  renderClocks();
-
+renderMoveHistory();
+updateStatus();
+renderClocks();
 }
 
 // ==========================================
-// PLAYER MOVE
+// PLAYER MOVES
 // ==========================================
 
-function handleClick(name) {
+function handleClick(name){
+if(gameResult||engineBusy||engineLoading||pendingSearch||thinkingTimer!==null)return;
+if(game.game_over())return;
 
-  if (
-    gameResult ||
-    engineBusy ||
-    engineLoading ||
-    pendingSearch ||
-    thinkingTimer !== null
-  ) return;
+if(gameMode==="online"){
+if(!onlineReady||!roomRef)return;
+if(game.turn()!==playerColor)return;
+}
 
-  if (game.game_over()) return;
+if(gameMode==="computer"&&game.turn()!==playerColor)return;
 
-  if (
-    gameMode === "computer" &&
-    game.turn() !== playerColor
-  ) return;
+if(selected){
+const moves=game.moves({square:selected,verbose:true});
+const move=moves.find(m=>m.to===name);
 
-  if (selected) {
+if(move){
+updateClock();
+if(gameResult)return;
 
-    const moves = game.moves({
-      square:selected,
-      verbose:true
-    });
+let promotion="q";
 
-    const move = moves.find(m => m.to === name);
+if(move.flags.includes("p")){
+const choice=prompt("Promote to: q, r, b, n","q");
+promotion=(choice||"q").toLowerCase();
+if(!["q","r","b","n"].includes(promotion))return;
+}
 
-    if (move) {
+const mover=game.turn();
 
-      // Check the active clock before accepting the move.
-      updateClock();
+const played=game.move({
+from:selected,
+to:name,
+promotion:promotion
+});
 
-      if (gameResult) return;
+selected=null;
 
-      let promotion = "q";
+if(played){
+playSound(played.captured?"capture":"move");
+switchClock(mover);
+renderBoard();
 
-      if (move.flags.includes("p")) {
+const ended=checkGameResult();
 
-        const choice = prompt(
-          "Promote to: q (Queen), r (Rook), b (Bishop), n (Knight)",
-          "q"
-        );
+if(gameMode==="online"){
+syncOnlineState();
+}else if(gameMode==="computer"&&!ended){
+scheduleComputerMove();
+}
+}
+return;
+}
+}
 
-        promotion = (choice || "q").toLowerCase();
+const piece=game.get(name);
 
-        if (!["q","r","b","n"].includes(promotion)) {
-          return;
-        }
+if(piece&&piece.color===game.turn()){
+selected=name;
+}else{
+selected=null;
+}
 
-      }
-
-      const mover = game.turn();
-
-      const played = game.move({
-        from:selected,
-        to:name,
-        promotion:promotion
-      });
-
-      selected = null;
-
-      if (played) {
-
-        playSound(played.captured ? "capture" : "move");
-
-        switchClock(mover);
-
-        renderBoard();
-
-        if (!checkGameResult()) {
-
-          if (gameMode === "computer") {
-            scheduleComputerMove();
-          }
-
-        }
-
-      }
-
-      return;
-
-    }
-
-  }
-
-  const piece = game.get(name);
-
-  if (piece && piece.color === game.turn()) {
-
-    selected = name;
-
-  } else {
-
-    selected = null;
-
-  }
-
-  renderBoard();
-
+renderBoard();
 }
 
 // ==========================================
-// COMPUTER SCHEDULER
+// COMPUTER MOVE
 // ==========================================
 
-function scheduleComputerMove() {
+function scheduleComputerMove(){
+if(game.game_over()||gameResult||gameMode!=="computer"||game.turn()!==computerColor)return;
 
-  if (
-    game.game_over() ||
-    gameResult ||
-    gameMode !== "computer" ||
-    game.turn() !== computerColor
-  ) return;
+if(thinkingTimer!==null)clearTimeout(thinkingTimer);
 
-  if (thinkingTimer !== null) {
-    clearTimeout(thinkingTimer);
-  }
+thinkingTimer=setTimeout(()=>{
+thinkingTimer=null;
+pendingSearch=true;
 
-  thinkingTimer = setTimeout(() => {
+if(!engineReady)initializeEngine();
+else startEngineMove();
 
-    thinkingTimer = null;
-
-    pendingSearch = true;
-
-    if (!engineReady) {
-
-      initializeEngine();
-
-    } else {
-
-      startEngineMove();
-
-    }
-
-    updateStatus();
-
-  },350);
-
+updateStatus();
+},350);
 }
 
-// ==========================================
-// STOCKFISH SEARCH
-// ==========================================
+function startEngineMove(){
+if(!engineReady||!pendingSearch||engineBusy)return;
 
-function startEngineMove() {
-
-  if (!engineReady || !pendingSearch || engineBusy) return;
-
-  if (
-    game.game_over() ||
-    gameResult ||
-    gameMode !== "computer" ||
-    game.turn() !== computerColor
-  ) {
-
-    pendingSearch = false;
-
-    updateStatus();
-
-    return;
-
-  }
-
-  pendingSearch = false;
-
-  engineBusy = true;
-
-  const settings = difficultySettings[computerDifficulty];
-
-  engine.postMessage(
-    "setoption name Skill Level value " + settings.skill
-  );
-
-  engine.postMessage(
-    "position fen " + game.fen()
-  );
-
-  engine.postMessage(
-    "go movetime " + settings.time
-  );
-
-  updateStatus();
-
+if(game.game_over()||gameResult||gameMode!=="computer"||game.turn()!==computerColor){
+pendingSearch=false;
+updateStatus();
+return;
 }
 
-// ==========================================
-// STOP SEARCH
-// ==========================================
+pendingSearch=false;
+engineBusy=true;
 
-function stopEngineSearch() {
+const settings=difficultySettings[computerDifficulty];
 
-  if (thinkingTimer !== null) {
+engine.postMessage("setoption name Skill Level value "+settings.skill);
+engine.postMessage("position fen "+game.fen());
+engine.postMessage("go movetime "+settings.time);
 
-    clearTimeout(thinkingTimer);
+updateStatus();
+}
 
-    thinkingTimer = null;
+function stopEngineSearch(){
+if(thinkingTimer!==null){
+clearTimeout(thinkingTimer);
+thinkingTimer=null;
+}
 
-  }
+pendingSearch=false;
 
-  pendingSearch = false;
-
-  if (engineBusy && engine) {
-
-    discardCurrentMove = true;
-
-    engine.postMessage("stop");
-
-  }
-
+if(engineBusy&&engine){
+discardCurrentMove=true;
+engine.postMessage("stop");
+}
 }
 
 // ==========================================
 // NEW GAME
 // ==========================================
 
-function restartGame() {
+function restartGame(){
+stopEngineSearch();
+stopClock();
 
-  stopEngineSearch();
+game.reset();
+gameResult=null;
+selected=null;
+hideResult();
 
-  stopClock();
+gameMode=modeSelect.value;
+computerDifficulty=difficultySelect.value;
 
-  game.reset();
+if(gameMode==="computer"||gameMode==="online"){
+playerColor=colorSelect.value;
+computerColor=playerColor==="w"?"b":"w";
+}
 
-  gameResult = null;
+resetClock();
 
-  selected = null;
+if(engineReady&&engine)engine.postMessage("ucinewgame");
 
-  hideResult();
+if(gameMode==="online"){
+if(!roomRef){
+onlineReady=false;
+renderBoard();
+return;
+}
 
-  gameMode = modeSelect.value;
+if(!onlineReady)return;
 
-  playerColor = colorSelect.value;
+whiteRemaining=initialTime*1000;
+blackRemaining=initialTime*1000;
 
-  computerColor = playerColor === "w" ? "b" : "w";
+roomRef.update({
+fen:game.fen(),
+moves:[],
+turn:"w",
+whiteRemaining:whiteRemaining,
+blackRemaining:blackRemaining,
+status:"playing"
+});
 
-  computerDifficulty = difficultySelect.value;
+startClock();
+renderBoard();
+return;
+}
 
-  resetClock();
+renderBoard();
+playSound("start");
+startClock();
 
-  if (engineReady && engine) {
-    engine.postMessage("ucinewgame");
-  }
-
-  renderBoard();
-
-  playSound("start");
-
-  // White's clock starts immediately.
-  startClock();
-
-  // Computer starts if the user selected Black.
-  if (
-    gameMode === "computer" &&
-    playerColor === "b"
-  ) {
-
-    scheduleComputerMove();
-
-  }
-
+if(gameMode==="computer"&&playerColor==="b"){
+scheduleComputerMove();
+}
 }
 
 // ==========================================
 // UNDO
 // ==========================================
 
-function undoMove() {
+function undoMove(){
+if(gameMode==="online"){
+alert("Undo is disabled in online games to keep both boards synchronized.");
+return;
+}
 
-  if (gameResult === "timeout") return;
+if(gameResult==="timeout")return;
 
-  stopEngineSearch();
+stopEngineSearch();
+stopClock();
 
-  stopClock();
+gameResult=null;
+selected=null;
+hideResult();
 
-  gameResult = null;
+const historyLength=game.history().length;
 
-  selected = null;
+if(historyLength>0){
+game.undo();
 
-  hideResult();
+if(gameMode==="computer"&&game.history().length>0&&game.turn()!==playerColor){
+game.undo();
+}
+}
 
-  const historyLength = game.history().length;
+resetClock();
+renderBoard();
+startClock();
 
-  if (historyLength > 0) {
-
-    game.undo();
-
-    if (
-      gameMode === "computer" &&
-      game.history().length > 0 &&
-      game.turn() !== playerColor
-    ) {
-
-      game.undo();
-
-    }
-
-  }
-
-  // Restore the clock to the original time control.
-  // Undo does not restore previously spent thinking time.
-  resetClock();
-
-  renderBoard();
-
-  startClock();
-
-  if (
-    gameMode === "computer" &&
-    game.turn() === computerColor
-  ) {
-
-    scheduleComputerMove();
-
-  }
-
+if(gameMode==="computer"&&game.turn()===computerColor){
+scheduleComputerMove();
+}
 }
 
 // ==========================================
 // RESIGN
 // ==========================================
 
-function resignGame() {
+function resignGame(){
+if(gameResult||game.game_over())return;
 
-  if (gameResult || game.game_over()) return;
+if(gameMode==="online"&&!onlineReady)return;
 
-  const confirmed = confirm(
-    "Are you sure you want to resign this game?"
-  );
+if(!confirm("Are you sure you want to resign this game?"))return;
 
-  if (!confirmed) return;
+const winner=game.turn()==="w"?"Black":"White";
 
-  const loser = game.turn();
+let message;
 
-  const winner = loser === "w" ? "Black" : "White";
+if(gameMode==="computer"){
+message="You resigned. The computer wins!";
+}else{
+message=winner+" wins by resignation!";
+}
 
-  let message;
-
-  if (gameMode === "computer") {
-
-    message = "You resigned. The computer wins!";
-
-  } else {
-
-    message = winner + " wins by resignation!";
-
-  }
-
-  finishGame(
-    "🏳 RESIGNED",
-    message,
-    "loss"
-  );
-
+finishGame("🏳 RESIGNED",message,"loss");
 }
 
 // ==========================================
 // DRAW
 // ==========================================
 
-function offerDraw() {
+function offerDraw(){
+if(gameResult||game.game_over())return;
 
-  if (gameResult || game.game_over()) return;
+if(!confirm("Do you agree to end this game as a draw?"))return;
 
-  const confirmed = confirm(
-    gameMode === "human"
-      ? "Do both players agree to a draw?"
-      : "Agree to end this game as a draw?"
-  );
-
-  if (!confirmed) return;
-
-  finishGame(
-    "½ DRAW",
-    "The game ended by agreement.",
-    "draw"
-  );
-
+finishGame("½ DRAW","The game ended by agreement.","draw");
 }
 
 // ==========================================
 // GAME MODE SETTINGS
 // ==========================================
 
-function updateGameMode() {
+function updateGameMode(){
+const mode=modeSelect.value;
 
-  const humanMode = modeSelect.value === "human";
+if(gameMode==="online"&&mode!=="online"){
+leaveOnlineRoom();
+}
 
-  document.getElementById("colorSetting").style.display =
-    humanMode ? "none" : "block";
+gameMode=mode;
 
-  document.getElementById("difficultySetting").style.display =
-    humanMode ? "none" : "block";
+const online=mode==="online";
+const human=mode==="human";
 
-  restartGame();
+document.getElementById("onlinePanel").style.display=online?"block":"none";
+document.getElementById("colorSetting").style.display=human||online?"none":"block";
+document.getElementById("difficultySetting").style.display=human||online?"none":"block";
 
+if(online){
+playerColor="w";
+}
+
+restartGame();
+
+if(online){
+showOnlineStatus("Create a room or join a friend.");
+}
 }
 
 // ==========================================
 // BUTTONS
 // ==========================================
 
-document.getElementById("undo").addEventListener(
-  "click",
-  undoMove
-);
+document.getElementById("undo").addEventListener("click",undoMove);
+document.getElementById("restart").addEventListener("click",restartGame);
+document.getElementById("resign").addEventListener("click",resignGame);
+document.getElementById("draw").addEventListener("click",offerDraw);
 
-document.getElementById("restart").addEventListener(
-  "click",
-  restartGame
-);
+modeSelect.addEventListener("change",updateGameMode);
+colorSelect.addEventListener("change",restartGame);
 
-document.getElementById("resign").addEventListener(
-  "click",
-  resignGame
-);
+difficultySelect.addEventListener("change",()=>{
+computerDifficulty=difficultySelect.value;
+});
 
-document.getElementById("draw").addEventListener(
-  "click",
-  offerDraw
-);
+categorySelect.addEventListener("change",()=>{
+updateTimePresets();
+restartGame();
+});
 
-modeSelect.addEventListener(
-  "change",
-  updateGameMode
-);
-
-colorSelect.addEventListener(
-  "change",
-  restartGame
-);
-
-difficultySelect.addEventListener(
-  "change",
-  () => {
-    computerDifficulty = difficultySelect.value;
-  }
-);
-
-categorySelect.addEventListener(
-  "change",
-  () => {
-    updateTimePresets();
-    restartGame();
-  }
-);
-
-timeControlSelect.addEventListener(
-  "change",
-  restartGame
-);
+timeControlSelect.addEventListener("change",restartGame);
 
 // ==========================================
 // START
 // ==========================================
 
 updateTimePresets();
-
 updateGameMode();
-
 initializeEngine();
 
 </script>
-
 </body>
 </html>
